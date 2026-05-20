@@ -1,45 +1,46 @@
 MODEL REPORT - FP-GROWTH RECOMMENDATION
 ============================================================
-Raw rows: 22821
-Clean rows: 21844
-Missing rows removed: 306
-Duplicate rows removed: 394
-Fuzzy-normalized rows: 296
-Unknown category rows removed: 277
-Valid baskets: 7805
-Train baskets: 6244
-Test baskets: 1561
-Final min_support: 0.00205
-Final min_count: 16
-Frequent itemsets: 52
-Strong rules exported: 40
+Raw rows: 64112
+Clean rows: 64112
+Missing rows removed: 0
+Duplicate rows removed: 0
+Fuzzy-normalized rows: 0
+Unknown category rows removed: 0
+Valid baskets: 14555
+Train baskets: 11644
+Test baskets: 2911
+Final min_support: 0.00206
+Final min_count: 30
+Frequent itemsets: 175
+Strong rules exported: 386
 
 Evaluation:
-Hit@4: 1445/1561 = 92.57%
+Hit@4: 2510/2911 = 86.22%
 
 Top 10 rules by lift:
-      antecedents consequents  support  support_count  confidence     lift  leverage  conviction  antecedent_len    score
-keyboard, monitor     desktop 0.110570            863    0.965324 4.673919  0.086913   22.882528               2 0.833521
-   monitor, mouse     desktop 0.114670            895    0.964440 4.669635  0.090114   22.313218               2 0.833360
-   desktop, mouse     monitor 0.114670            895    0.858925 4.582304  0.089646    5.759751               2 0.720713
-desktop, keyboard     monitor 0.110570            863    0.856151 4.567503  0.086362    5.648666               2 0.715520
-          monitor     desktop 0.165663           1293    0.883800 4.279195  0.126949    6.828473               1 0.763952
-          desktop     monitor 0.165663           1293    0.802109 4.279195  0.126949    4.106083               1 0.720612
-clocks, headphone  smartphone 0.118129            922    0.975661 2.577001  0.072290   25.531293               2 0.718412
-        headphone  smartphone 0.303908           2372    0.943892 2.493088  0.182008   11.074961               1 0.780956
-       smartphone   headphone 0.303908           2372    0.802707 2.493088  0.182008    3.436654               1 0.694565
-           clocks  smartphone 0.176682           1379    0.897202 2.369768  0.102125    6.044851               1 0.650936
+          antecedents consequents  support  support_count  confidence     lift  leverage  conviction  antecedent_len    score
+   clocks, smartphone          tv 0.011336            165    0.632184 3.537654  0.008132    2.232905               2 0.483847
+  desktop, smartphone          tv 0.011611            169    0.592982 3.318285  0.008112    2.017846               2 0.452756
+    mouse, smartphone          tv 0.013397            195    0.568513 3.181357  0.009186    1.903415               2 0.434108
+ keyboard, smartphone          tv 0.013397            195    0.561960 3.144684  0.009137    1.874938               2 0.428945
+ notebook, smartphone          tv 0.013947            203    0.530026 2.965986  0.009245    1.747541               2 0.404077
+  printer, smartphone          tv 0.013466            196    0.517150 2.893935  0.008813    1.700941               2 0.393813
+headphone, smartphone          tv 0.015596            227    0.480932 2.691260  0.009801    1.582257               2 0.366366
+  monitor, smartphone          tv 0.014016            204    0.477752 2.673463  0.008773    1.572621               2 0.363282
+   clocks, smartphone     desktop 0.013260            193    0.739464 2.461215  0.007872    2.685051               2 0.461848
+       smartphone, tv     desktop 0.011611            169    0.734783 2.445635  0.006863    2.637660               2 0.458016
 
 Most recommended categories:
 consequents
-mouse         8
-keyboard      8
-desktop       6
-monitor       6
-smartphone    3
-headphone     3
-notebook      3
-clocks        3
+notebook     45
+keyboard     45
+clocks       45
+mouse        44
+monitor      44
+printer      44
+desktop      44
+headphone    40
+tv           35
 
 Huong cai tien thuc te:
 - Them cot user_id, order_time, quantity vao du lieu giao dich.

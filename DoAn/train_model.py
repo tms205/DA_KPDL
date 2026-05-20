@@ -55,6 +55,7 @@ MAX_ITEMSET_LEN = 3
 FUZZY_THRESHOLD = 80
 TEST_RATIO = 0.2
 RANDOM_STATE = 42
+MAX_ONLINE_RETAIL_ITEMS = 300
 
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -106,6 +107,9 @@ def normalize_item(raw_name, master_categories):
     if not raw_name:
         return raw_name
 
+    if not master_categories:
+        return raw_name
+
     match = process.extractOne(raw_name, master_categories)
     if not match:
         return raw_name
@@ -114,7 +118,36 @@ def normalize_item(raw_name, master_categories):
     return category if score >= FUZZY_THRESHOLD else raw_name
 
 
-def clean_transactions(df, master_categories):
+def standardize_transaction_columns(df):
+    """Dua cac bo du lieu giao dich ve 2 cot chuan cua project.
+
+    - Data cu: Ma_Hoa_Don, Ten_San_Pham.
+    - Online Retail.xlsx: InvoiceNo, Description, Quantity.
+    """
+    columns = set(df.columns)
+    if {"Ma_Hoa_Don", "Ten_San_Pham"}.issubset(columns):
+        return df[["Ma_Hoa_Don", "Ten_San_Pham"]].copy(), True
+
+    if {"InvoiceNo", "Description"}.issubset(columns):
+        data = df.copy()
+        if "Quantity" in data.columns:
+            data = data[pd.to_numeric(data["Quantity"], errors="coerce") > 0]
+        data = data[~data["InvoiceNo"].astype(str).str.startswith("C", na=False)]
+        data = data.rename(
+            columns={
+                "InvoiceNo": "Ma_Hoa_Don",
+                "Description": "Ten_San_Pham",
+            }
+        )
+        return data[["Ma_Hoa_Don", "Ten_San_Pham"]].copy(), False
+
+    raise ValueError(
+        "File du lieu can co cot Ma_Hoa_Don/Ten_San_Pham "
+        "hoac InvoiceNo/Description."
+    )
+
+
+def clean_transactions(df, master_categories, filter_to_master=True):
     """Lam sach du lieu giao dich truoc khi dua vao FP-Growth."""
     before = len(df)
     df = df.dropna(subset=["Ten_San_Pham", "Ma_Hoa_Don"]).copy()
@@ -125,14 +158,24 @@ def clean_transactions(df, master_categories):
     duplicate_rows = before - len(df)
 
     before_values = df["Ten_San_Pham"].copy()
-    df["Ten_San_Pham"] = df["Ten_San_Pham"].apply(
-        lambda value: normalize_item(value, master_categories)
-    )
-    changed_rows = (before_values.astype(str).str.lower() != df["Ten_San_Pham"]).sum()
+    if filter_to_master:
+        df["Ten_San_Pham"] = df["Ten_San_Pham"].apply(
+            lambda value: normalize_item(value, master_categories)
+        )
+        changed_rows = (before_values.astype(str).str.lower() != df["Ten_San_Pham"]).sum()
+    else:
+        df["Ten_San_Pham"] = (
+            df["Ten_San_Pham"]
+            .astype(str)
+            .str.strip()
+            .str.lower()
+        )
+        changed_rows = 0
 
     valid_categories = set(master_categories)
     before = len(df)
-    df = df[df["Ten_San_Pham"].isin(valid_categories)].copy()
+    if filter_to_master:
+        df = df[df["Ten_San_Pham"].isin(valid_categories)].copy()
     unknown_rows = before - len(df)
 
     stats = {
@@ -149,6 +192,20 @@ def clean_transactions(df, master_categories):
     print(f"   - Removed unknown categories: {unknown_rows}")
     print(f"   - Clean rows left: {len(df)}")
     return df, stats
+
+
+def limit_high_cardinality_items(df, max_items=MAX_ONLINE_RETAIL_ITEMS):
+    """Giam so luong mat hang cho bo Online Retail de FP-Growth chay on dinh."""
+    counts = df["Ten_San_Pham"].value_counts()
+    if len(counts) <= max_items:
+        return df
+
+    keep_items = set(counts.head(max_items).index)
+    before = len(df)
+    df = df[df["Ten_San_Pham"].isin(keep_items)].copy()
+    print(f"   - Limited Online Retail items: {len(counts)} -> {max_items}")
+    print(f"   - Rows removed by item limit: {before - len(df)}")
+    return df
 
 
 def build_baskets(df):
@@ -384,13 +441,19 @@ def main():
         raise FileNotFoundError(f"Cannot find {DATA_FILE}")
 
     df = pd.read_csv(DATA_FILE)
+    df, filter_to_master = standardize_transaction_columns(df)
     raw_rows = len(df)
     print(f"   - Raw rows: {raw_rows}")
 
     print("Step 2: Cleaning and standardizing categories...")
     master_categories = load_master_categories()
-    print(f"   - Master categories: {', '.join(master_categories)}")
-    df, clean_stats = clean_transactions(df, master_categories)
+    if filter_to_master:
+        print(f"   - Master categories: {', '.join(master_categories)}")
+    else:
+        print("   - Detected Online Retail format; using product descriptions as items.")
+    df, clean_stats = clean_transactions(df, master_categories, filter_to_master)
+    if not filter_to_master:
+        df = limit_high_cardinality_items(df)
 
     print("Step 3: Building popular fallback list...")
     top_products = df["Ten_San_Pham"].value_counts().head(20).reset_index()

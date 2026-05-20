@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TechStore AI - Liên Hệ Với Chúng Tôi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="store.css" />
+    <script src="app.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: { colors: { primary: "#000000", secondary: "#dc2626" } },
+        },
+      };
+    </script>
+    <style>
+      .section-title {
+        width: 300px;
+        height: 50px;
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4);
+        background-color: white;
+        text-align: center;
+        border-radius: 10px;
+        line-height: 50px;
+        font-weight: bold;
+        font-size: 20px;
+      }
+      .contact-box {
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+        border-radius: 8px;
+        padding: 30px;
+        background: white;
+        height: 100%;
+      }
+      /* Hiệu ứng focus input mượt mà */
+      .form-control:focus {
+        border-color: #000;
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+        outline: none;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col justify-between"
+  >
+    <nav
+      class="bg-black text-white sticky top-0 z-50 h-[70px] shadow-md flex items-center"
+    >
+      <div
+        class="max-w-7xl mx-auto px-4 w-full flex justify-between items-center"
+      >
+        <a
+          href="index.html"
+          class="flex items-center gap-2 cursor-pointer w-1/4"
+        >
+          <i class="fa-solid fa-microchip text-white text-3xl"></i>
+          <span class="font-bold text-2xl tracking-widest text-white"
+            >TECH<span
+              class="text-red-600 text-base block -mt-2 tracking-widest font-bold"
+              >STORE AI</span
+            ></span
+          >
+        </a>
+
+        <ul
+          class="hidden md:flex gap-8 text-sm font-semibold uppercase tracking-wider w-2/4 justify-center"
+        >
+          <li>
+            <a href="index.html" class="hover:text-gray-400 transition-colors"
+              >Trang Chủ</a
+            >
+          </li>
+          <li>
+            <a href="product.html" class="hover:text-gray-400 transition-colors"
+              >Sản Phẩm</a
+            >
+          </li>
+          <li>
+            <a
+              href="contact.html"
+              class="text-red-600 font-bold transition-colors"
+              >Liên Hệ</a
+            >
+          </li>
+        </ul>
+
+        <div class="flex items-center gap-4 w-1/4 justify-end">
+          <a
+            href="cart.html"
+            class="relative text-white hover:text-gray-300 p-2 transition-colors"
+          >
+            <i class="fa-solid fa-bag-shopping text-2xl"></i>
+            <span
+              id="cart-count"
+              class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-black"
+              >0</span
+            >
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
+      <a
+        href="index.html"
+        class="inline-flex items-center text-black font-bold uppercase tracking-wider text-xs mb-6 hover:text-red-600 transition-colors"
+      >
+        <i class="fa-solid fa-arrow-left mr-2"></i> Trở về Cửa Hàng
+      </a>
+
+      <div class="flex items-center gap-4 mb-8">
+        <div class="section-title text-sm sm:text-base">KẾT NỐI HỆ THỐNG</div>
+        <hr class="border-black flex-1 mt-1" />
+      </div>
+
+      <div id="alert-message-box" class="mb-6 hidden"></div>
+
+      <div class="flex flex-col lg:flex-row gap-8 items-stretch">
+        <section class="lg:w-5/12">
+          <div class="ui-panel contact-box flex flex-col justify-between">
+            <div>
+              <h3
+                class="font-black text-lg text-black uppercase tracking-wide mb-6 pb-3 border-b-2 border-black w-max"
+              >
+                THÔNG TIN LIÊN HỆ
+              </h3>
+
+              <div class="space-y-4 text-sm text-gray-600">
+                <p class="flex items-start gap-3">
+                  <i
+                    class="fa-solid fa-location-dot text-black text-base mt-0.5 w-5 text-center shrink-0"
+                  ></i>
+                  <span
+                    >140 Lê Trọng Tấn, phường Sơn Kỳ, quận Tân Phú, TP.HCM</span
+                  >
+                </p>
+
+                <p class="flex items-center gap-3">
+                  <i
+                    class="fa-solid fa-phone text-black text-base w-5 text-center shrink-0"
+                  ></i>
+                  <span
+                    >Hotline hỗ trợ:
+                    <b class="text-black font-extrabold text-base"
+                      >0907 123 456</b
+                    ></span
+                  >
+                </p>
+
+                <p class="flex items-center gap-3">
+                  <i
+                    class="fa-solid fa-envelope text-black text-base w-5 text-center shrink-0"
+                  ></i>
+                  <span
+                    >Email:
+                    <b class="text-black font-bold"
+                      >support@techstore.vn</b
+                    ></span
+                  >
+                </p>
+
+                <p class="flex items-center gap-3">
+                  <i
+                    class="fa-solid fa-clock text-black text-base w-5 text-center shrink-0"
+                  ></i>
+                  <span>Phục vụ: 8:00 – 21:00 (Thứ 2 – CN)</span>
+                </p>
+              </div>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-gray-100">
+              <h5
+                class="font-bold text-xs text-gray-400 uppercase tracking-widest mb-4"
+              >
+                KẾT NỐI VỚI CHÚNG TÔI
+              </h5>
+              <div class="flex gap-4 text-2xl text-black">
+                <a
+                  href="#"
+                  class="hover:text-red-600 hover:-translate-y-1 transition-all duration-200"
+                  ><i class="fa-brands fa-facebook"></i
+                ></a>
+                <a
+                  href="#"
+                  class="hover:text-red-600 hover:-translate-y-1 transition-all duration-200"
+                  ><i class="fa-brands fa-instagram"></i
+                ></a>
+                <a
+                  href="#"
+                  class="hover:text-red-600 hover:-translate-y-1 transition-all duration-200"
+                  ><i class="fa-brands fa-tiktok"></i
+                ></a>
+                <a
+                  href="#"
+                  class="hover:text-red-600 hover:-translate-y-1 transition-all duration-200"
+                  ><i class="fa-brands fa-youtube"></i
+                ></a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="lg:w-7/12 flex-1">
+          <div class="ui-panel contact-box">
+            <h3
+              class="font-black text-lg text-black uppercase tracking-wide mb-6 pb-3 border-b-2 border-black w-max"
+            >
+              GỬI TIN NHẮN CHO CHÚNG TÔI
+            </h3>
+
+            <form
+              id="contact-form"
+              onsubmit="submitContactForm(event)"
+              class="space-y-4"
+            >
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label
+                    class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1"
+                    >Họ và tên *</label
+                  >
+                  <input
+                    type="text"
+                    name="FullName"
+                    placeholder="Nhập họ tên đầy đủ..."
+                    required
+                    class="form-control w-full p-3 bg-gray-50 border border-gray-300 rounded-lg text-sm transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1"
+                    >Email liên hệ *</label
+                  >
+                  <input
+                    type="email"
+                    name="Email"
+                    placeholder="name@example.com"
+                    required
+                    class="form-control w-full p-3 bg-gray-50 border border-gray-300 rounded-lg text-sm transition-all"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1"
+                  >Số điện thoại</label
+                >
+                <input
+                  type="tel"
+                  name="Phone"
+                  placeholder="Ví dụ: 0907123456"
+                  pattern="^(0[3|5|7|8|9])[0-9]{8}$"
+                  title="Số điện thoại phải đúng định dạng 10 số của Việt Nam (Bắt đầu bằng 03, 05, 07, 08, 09)"
+                  class="form-control w-full p-3 bg-gray-50 border border-gray-300 rounded-lg text-sm transition-all"
+                />
+                <span class="text-[10px] text-gray-400 mt-1 block"
+                  >Nhập SĐT chuẩn 10 số để bộ phận CSKH tiện liên lạc hỗ trợ kỹ
+                  thuật.</span
+                >
+              </div>
+
+              <div>
+                <label
+                  class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1"
+                  >Nội dung liên hệ *</label
+                >
+                <textarea
+                  name="Message"
+                  rows="5"
+                  placeholder="Nhập nội dung cần hỗ trợ tư vấn cấu hình, phản hồi đơn hàng hoặc báo cáo sự cố thuật toán..."
+                  required
+                  class="form-control w-full p-3 bg-gray-50 border border-gray-300 rounded-lg text-sm transition-all resize-y"
+                ></textarea>
+              </div>
+
+              <div class="text-end pt-2">
+                <button
+                  type="submit"
+                  class="bg-black hover:bg-red-600 text-white font-bold text-xs uppercase tracking-widest px-8 py-3.5 rounded shadow-md transition-colors inline-flex items-center gap-2"
+                >
+                  <i class="fa-solid fa-paper-plane"></i> Gửi Liên Hệ
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer
+      class="bg-black text-white pt-12 pb-6 px-4 border-t-4 border-red-600 mt-12"
+    >
+      <div
+        class="max-w-7xl mx-auto border-t border-gray-800 pt-6 text-center text-xs text-gray-500"
+      >
+        <p>© 2026 TechStore AI. Mọi quyền được bảo lưu.</p>
+      </div>
+    </footer>
+
+    <script>
+      // Khởi tạo nạp số lượng badge giỏ hàng
+      function updateCartBadge() {
+        const cart = JSON.parse(localStorage.getItem("techstore_cart") || "[]");
+        const badge = document.getElementById("cart-count");
+        if (badge)
+          badge.innerText = cart.reduce(
+            (sum, item) => sum + Number(item.quantity || 1),
+            0,
+          );
+      }
+
+      // Hàm xử lý hành vi Submit Form liên hệ ngầm
+      async function submitContactForm(event) {
+        // Ngăn trình duyệt tự động reload trang
+        event.preventDefault();
+
+        const form = event.target;
+        const alertBox = document.getElementById("alert-message-box");
+
+        // Trích xuất dữ liệu form để test ngầm
+        const formData = new FormData(form);
+        const fullName = formData.get("FullName");
+
+        try {
+          const response = await fetch(`${TECHSTORE_API}/api/contact`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: fullName,
+              email: formData.get("Email"),
+              phone: formData.get("Phone") || "",
+              message: formData.get("Message"),
+            }),
+          });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.detail || "Không gửi được liên hệ");
+        } catch (error) {
+          showToast(error.message || "Lỗi kết nối backend");
+          return;
+        }
+
+        // Giả lập gửi thông tin thành công tuyệt đối
+        alertBox.innerHTML = `
+          <div class="bg-green-50 border-l-4 border-green-600 p-4 rounded-r-lg shadow-sm flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-circle-check text-green-600 text-2xl shrink-0"></i>
+              <div>
+                <p class="font-bold text-green-800 text-sm">Gửi yêu cầu liên hệ thành công!</p>
+                <p class="text-xs text-green-700 mt-0.5">Cảm ơn sếp <strong>${fullName}</strong>. Yêu cầu của bạn đã được chuyển tới hệ thống ngầm ngậm xử lý logic AI.</p>
+              </div>
+            </div>
+            <button onclick="document.getElementById('alert-message-box').classList.add('hidden')" class="text-green-600 hover:text-green-900 font-bold p-1">
+              <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+          </div>
+        `;
+
+        // Hiển thị khung thông báo và cuộn mượt lên trên để khách dễ nhìn
+        alertBox.classList.remove("hidden");
+        alertBox.scrollIntoView({ behavior: "smooth", block: "center" });
+
+        // Kích hoạt thêm thông báo nổi Pop-up Toast quen thuộc của hệ thống
+        showToast("Đã gửi tin nhắn thành công!");
+
+        // Dọn dẹp trắng trơn input form
+        form.reset();
+      }
+
+      // Tiện ích thông báo Pop-up Toast góc phải màn hình
+      function showToast(htmlMsg) {
+        const oldToast = document.getElementById("custom-toast");
+        if (oldToast) oldToast.remove();
+
+        const toast = document.createElement("div");
+        toast.id = "custom-toast";
+        toast.className =
+          "fixed bottom-5 right-5 bg-black text-white text-xs sm:text-sm px-4 py-3 rounded shadow-2xl flex items-center gap-3 z-50 border-l-4 border-red-600 transition-all";
+        toast.innerHTML = `<i class="fa-solid fa-check text-red-600 font-bold"></i> <div>${htmlMsg}</div>`;
+
+        document.body.appendChild(toast);
+        setTimeout(() => {
+          if (toast) toast.remove();
+        }, 2500);
+      }
+
+      // Kích hoạt khi tải trang
+      window.onload = updateCartBadge;
+    </script>
+  </body>
+</html>

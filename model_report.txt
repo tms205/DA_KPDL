@@ -1,0 +1,48 @@
+MODEL REPORT - FP-GROWTH RECOMMENDATION
+============================================================
+Raw rows: 22849
+Clean rows: 21895
+Missing rows removed: 302
+Duplicate rows removed: 398
+Fuzzy-normalized rows: 315
+Unknown category rows removed: 254
+Valid baskets: 7822
+Train baskets: 6257
+Test baskets: 1565
+Final min_support: 0.00205
+Final min_count: 16
+Frequent itemsets: 52
+Strong rules exported: 40
+
+Evaluation:
+Hit@4: 1447/1565 = 92.46%
+
+Top 10 rules by lift:
+      antecedents consequents  support  support_count  confidence     lift  leverage  conviction  antecedent_len    score
+keyboard, monitor     desktop 0.122092            955    0.960765 4.513574  0.095042   20.061949               2 0.849356
+   monitor, mouse     desktop 0.117233            917    0.959205 4.506247  0.091218   19.294993               2 0.841237
+desktop, keyboard     monitor 0.122092            955    0.862692 4.347923  0.094011    5.837861               2 0.728216
+   desktop, mouse     monitor 0.117233            917    0.859419 4.331427  0.090168    5.701943               2 0.721948
+          desktop     monitor 0.174124           1362    0.818018 4.122769  0.131889    4.404751               1 0.737354
+          monitor     desktop 0.174124           1362    0.877577 4.122769  0.131889    6.429681               1 0.771271
+clocks, headphone  smartphone 0.117873            922    0.964435 2.511256  0.070935   17.319205               2 0.701300
+       smartphone   headphone 0.305037           2386    0.794274 2.459546  0.181015    3.291104               1 0.697591
+        headphone  smartphone 0.305037           2386    0.944576 2.459546  0.181015   11.113588               1 0.796704
+           clocks  smartphone 0.180772           1414    0.892677 2.324407  0.103001    5.739251               1 0.658698
+
+Most recommended categories:
+consequents
+mouse         8
+keyboard      8
+desktop       6
+monitor       6
+smartphone    3
+headphone     3
+notebook      3
+clocks        3
+
+Huong cai tien thuc te:
+- Them cot user_id, order_time, quantity vao du lieu giao dich.
+- Them profit_margin, stock, promotion vao bang products.
+- Ket hop FP-Growth voi content-based filtering theo category/brand/price.
+- Khi user co lich su mua hang, cong them diem ca nhan hoa theo segment.

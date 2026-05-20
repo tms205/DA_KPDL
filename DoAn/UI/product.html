@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TechStore AI - Kho Hàng Công Nghệ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="store.css" />
+    <script src="app.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: { colors: { primary: "#000000", secondary: "#dc2626" } },
+        },
+      };
+    </script>
+    <style>
+      .filter-section {
+        margin-bottom: 20px;
+      }
+      .sidebar-dropdown {
+        position: relative;
+        width: 100%;
+      }
+      .dropdown-btn {
+        background-color: #000;
+        color: white;
+        padding: 12px 15px;
+        font-size: 14px;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-transform: uppercase;
+        font-weight: bold;
+        border-radius: 6px;
+      }
+      .dropdown-btn:hover {
+        background-color: #333;
+      }
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background-color: #fff;
+        min-width: 100%;
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15);
+        z-index: 100;
+        border: 1px solid #eee;
+        border-radius: 0 0 6px 6px;
+        overflow: hidden;
+      }
+      .dropdown-content a {
+        color: #333;
+        padding: 10px 15px;
+        text-decoration: none;
+        display: block;
+        border-bottom: 1px solid #f9f9f9;
+        font-size: 13px;
+        transition: all 0.2s;
+        cursor: pointer;
+      }
+      .dropdown-content a:hover,
+      .dropdown-content a.active {
+        background-color: #fcfcfc;
+        color: #dc2626;
+        padding-left: 22px;
+        font-weight: bold;
+      }
+      .sidebar-dropdown:hover .dropdown-content {
+        display: block;
+      }
+      .filter-title {
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 14px;
+        margin-bottom: 12px;
+        display: block;
+        border-bottom: 2px solid #000;
+        padding-bottom: 6px;
+        color: #000;
+      }
+      .size-tag {
+        display: inline-block;
+        border: 1px solid #ddd;
+        padding: 6px 14px;
+        margin: 3px 2px;
+        color: #555;
+        text-decoration: none;
+        font-size: 12px;
+        border-radius: 20px;
+        transition: all 0.2s;
+        cursor: pointer;
+      }
+      .size-tag:hover,
+      .size-tag.active {
+        background-color: #000;
+        color: white;
+        border-color: #000;
+        font-weight: bold;
+      }
+      .price-link {
+        display: block;
+        color: #555;
+        padding: 6px 4px;
+        text-decoration: none;
+        font-size: 13px;
+        transition: color 0.2s;
+        cursor: pointer;
+      }
+      .price-link.active,
+      .price-link:hover {
+        color: #dc2626;
+        font-weight: bold;
+      }
+      .product-card {
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+        border-radius: 10px;
+        padding: 15px;
+        background: white;
+        transition: all 0.3s;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+      }
+      .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col justify-between"
+  >
+    <nav
+      class="bg-black text-white sticky top-0 z-50 h-[70px] shadow-md flex items-center"
+    >
+      <div
+        class="max-w-7xl mx-auto px-4 w-full flex justify-between items-center"
+      >
+        <a
+          href="index.html"
+          class="flex items-center gap-2 cursor-pointer w-1/4"
+        >
+          <i class="fa-solid fa-microchip text-white text-3xl"></i>
+          <span class="font-bold text-2xl tracking-widest text-white"
+            >TECH<span
+              class="text-red-600 text-base block -mt-2 tracking-widest font-bold"
+              >STORE AI</span
+            ></span
+          >
+        </a>
+        <ul
+          class="hidden md:flex gap-8 text-sm font-semibold uppercase tracking-wider w-2/4 justify-center"
+        >
+          <li>
+            <a href="index.html" class="hover:text-gray-400 transition-colors"
+              >Trang Chủ</a
+            >
+          </li>
+          <li>
+            <a
+              href="product.html"
+              class="text-red-600 font-bold transition-colors"
+              >Sản Phẩm</a
+            >
+          </li>
+          <li>
+            <a
+              href="contact.html"
+              class="hover:text-gray-400 transition-colors"
+              >Liên Hệ</a
+            >
+          </li>
+        </ul>
+        <div class="flex items-center gap-4 w-1/4 justify-end">
+          <a
+            href="cart.html"
+            class="relative text-white hover:text-gray-300 p-2 transition-colors"
+          >
+            <i class="fa-solid fa-bag-shopping text-2xl"></i>
+            <span
+              id="cart-count"
+              class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-black"
+              >0</span
+            >
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
+      <div
+        class="border-t-2 border-black pt-3 mb-6 flex justify-between items-center"
+      >
+        <h3
+          class="text-xl sm:text-2xl font-black tracking-wide text-black uppercase"
+        >
+          DANH SÁCH THIẾT BỊ
+        </h3>
+        <span
+          id="product-count-label"
+          class="text-xs sm:text-sm font-bold text-gray-500 bg-white px-3 py-1 rounded-full border shadow-sm"
+          >0 Sản phẩm</span
+        >
+      </div>
+      <hr class="border-gray-200 mb-8" />
+
+      <div class="flex flex-col lg:flex-row gap-8">
+        <aside class="lg:w-1/4 shrink-0">
+          <div class="ui-panel p-5 h-fit sticky top-24">
+            <div class="flex justify-between items-center mb-4 pb-2 border-b">
+              <span
+                class="font-bold text-xs text-gray-400 uppercase tracking-widest"
+                >BỘ LỌC TÌM KIẾM</span
+              >
+              <button
+                onclick="resetFilters()"
+                class="text-xs text-red-600 hover:underline font-bold"
+              >
+                Xóa lọc
+              </button>
+            </div>
+
+            <div class="filter-section">
+              <div class="sidebar-dropdown">
+                <button class="dropdown-btn">
+                  DANH MỤC <span class="text-xs">&#9662;</span>
+                </button>
+                <div class="dropdown-content" id="category-filter-list">
+                  <a onclick="setCategory('all')" class="active" data-cat="all"
+                    >⚡ Tất cả thiết bị</a
+                  >
+                  <a onclick="setCategory('smartphone')" data-cat="smartphone"
+                    >📱 Smartphone</a
+                  >
+                  <a onclick="setCategory('notebook')" data-cat="notebook"
+                    >💻 Laptop / Notebook</a
+                  >
+                  <a onclick="setCategory('desktop')" data-cat="desktop"
+                    >🖥️ PC Desktop</a
+                  >
+                  <a onclick="setCategory('monitor')" data-cat="monitor"
+                    >📺 Màn hình</a
+                  >
+                  <a onclick="setCategory('mouse')" data-cat="mouse"
+                    >🖱️ Chuột Gaming</a
+                  >
+                  <a onclick="setCategory('keyboard')" data-cat="keyboard"
+                    >⌨️ Bàn phím cơ</a
+                  >
+                  <a onclick="setCategory('headphone')" data-cat="headphone"
+                    >🎧 Tai nghe</a
+                  >
+                  <a onclick="setCategory('clocks')" data-cat="clocks"
+                    >⌚ Smartwatch</a
+                  >
+                  <a onclick="setCategory('printer')" data-cat="printer"
+                    >🖨️ Máy in</a
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="filter-section">
+              <div class="sidebar-dropdown">
+                <button class="dropdown-btn">
+                  THƯƠNG HIỆU <span class="text-xs">&#9662;</span>
+                </button>
+                <div class="dropdown-content" id="brand-filter-list">
+                  <a onclick="setBrand('all')" class="active" data-brand="all"
+                    >⚡ Tất cả hãng</a
+                  >
+                  <a onclick="setBrand('Apple')" data-brand="Apple">🍏 Apple</a>
+                  <a onclick="setBrand('Samsung')" data-brand="Samsung"
+                    >🌌 Samsung</a
+                  >
+                  <a onclick="setBrand('Xiaomi')" data-brand="Xiaomi"
+                    >🟠 Xiaomi</a
+                  >
+                  <a onclick="setBrand('Asus')" data-brand="Asus"
+                    >🔺 Asus ROG</a
+                  >
+                  <a onclick="setBrand('Logitech')" data-brand="Logitech"
+                    >🔵 Logitech</a
+                  >
+                  <a onclick="setBrand('Razer')" data-brand="Razer">🟢 Razer</a>
+                  <a onclick="setBrand('Sony')" data-brand="Sony">🎵 Sony</a>
+                  <a onclick="setBrand('Dell')" data-brand="Dell">🖥️ Dell</a>
+                  <a onclick="setBrand('HP')" data-brand="HP">🔵 HP</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="filter-section mt-6">
+              <span class="filter-title">PHÂN KHÚC CẤU HÌNH</span>
+              <div id="segment-tags" class="flex flex-wrap">
+                <a
+                  onclick="setSegment('all')"
+                  class="size-tag active"
+                  data-seg="all"
+                  >Tất cả</a
+                >
+                <a
+                  onclick="setSegment('Pro Max')"
+                  class="size-tag"
+                  data-seg="Pro Max"
+                  >Pro Max</a
+                >
+                <a
+                  onclick="setSegment('Ultra')"
+                  class="size-tag"
+                  data-seg="Ultra"
+                  >Ultra</a
+                >
+                <a onclick="setSegment('Pro')" class="size-tag" data-seg="Pro"
+                  >Pro Series</a
+                >
+                <a
+                  onclick="setSegment('Wireless')"
+                  class="size-tag"
+                  data-seg="Wireless"
+                  >Wireless</a
+                >
+                <a onclick="setSegment('4K')" class="size-tag" data-seg="4K"
+                  >Màn 4K</a
+                >
+              </div>
+            </div>
+
+            <div class="filter-section mt-6">
+              <span class="filter-title">KHOẢNG GIÁ</span>
+              <div id="price-links" class="space-y-1">
+                <a
+                  onclick="setPrice('all')"
+                  class="price-link active"
+                  data-price="all"
+                  >⚡ Tất cả mức giá</a
+                >
+                <a
+                  onclick="setPrice('under5')"
+                  class="price-link"
+                  data-price="under5"
+                  >Dưới 5 triệu</a
+                >
+                <a
+                  onclick="setPrice('5to15')"
+                  class="price-link"
+                  data-price="5to15"
+                  >5 triệu - 15 triệu</a
+                >
+                <a
+                  onclick="setPrice('15to30')"
+                  class="price-link"
+                  data-price="15to30"
+                  >15 triệu - 30 triệu</a
+                >
+                <a
+                  onclick="setPrice('above30')"
+                  class="price-link"
+                  data-price="above30"
+                  >Trên 30 triệu</a
+                >
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <section class="lg:w-3/4 flex-1">
+          <div class="ui-panel p-4 mb-6 flex flex-col sm:flex-row gap-4 justify-between items-center">
+            <div class="relative w-full sm:w-3/5">
+              <input
+                type="text"
+                id="search-keyword"
+                oninput="triggerSearch()"
+                placeholder="Nhập tên model cần tìm kiếm..."
+                class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-black transition-colors"
+              />
+              <i
+                class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400 text-sm"
+              ></i>
+              <button
+                onclick="clearSearch()"
+                id="clear-search-btn"
+                class="absolute right-3 top-2.5 text-gray-400 hover:text-black hidden"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <div class="w-full sm:w-2/5 flex items-center justify-end gap-2">
+              <span class="text-xs text-gray-500 whitespace-nowrap font-bold"
+                >Sắp xếp:</span
+              >
+              <select
+                id="sort-order"
+                onchange="triggerSort()"
+                class="bg-gray-50 border border-gray-300 text-gray-800 text-xs rounded-lg p-2.5 focus:outline-none focus:border-black font-semibold cursor-pointer w-full sm:w-auto"
+              >
+                <option value="default">✨ Theo mặc định</option>
+                <option value="price_asc">📈 Giá: Thấp đến Cao</option>
+                <option value="price_desc">📉 Giá: Cao đến Thấp</option>
+                <option value="name_asc">🔤 Tên: A - Z</option>
+              </select>
+            </div>
+          </div>
+
+          <div
+            id="products-grid"
+            class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6"
+          >
+            <div
+              class="col-span-full text-center py-16 text-gray-400 bg-white rounded-xl border"
+            >
+              <i
+                class="fa-solid fa-circle-notch fa-spin text-4xl mb-3 text-black"
+              ></i>
+              <p class="text-xs uppercase tracking-widest font-bold">
+                Đang kết nối kho hàng SQLite...
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer
+      class="bg-black text-white pt-12 pb-6 px-4 border-t-4 border-red-600 mt-12"
+    >
+      <div
+        class="max-w-7xl mx-auto border-t border-gray-800 pt-6 text-center text-xs text-gray-500"
+      >
+        <p>© 2026 TechStore AI. Mọi quyền được bảo lưu.</p>
+      </div>
+    </footer>
+
+    <script>
+      const API_BASE_URL = "http://127.0.0.1:8000";
+      let allProducts = [];
+      let filteredProducts = [];
+      let currentFilter = {
+        category: "all",
+        brand: "all",
+        segment: "all",
+        priceRange: "all",
+        keyword: "",
+        sortOrder: "default",
+      };
+
+      function formatVND(amount) {
+        return new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        }).format(amount);
+      }
+
+      function renderMedia(iconUrl, productName) {
+        if (!iconUrl)
+          return `<i class="fa-solid fa-microchip text-gray-200 text-5xl"></i>`;
+        if (
+          iconUrl.includes(".") ||
+          iconUrl.includes("/") ||
+          iconUrl.startsWith("http")
+        ) {
+          return `<img src="${iconUrl}" alt="${productName}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300">`;
+        }
+        return `<i class="fa-solid ${iconUrl} text-black text-5xl group-hover:scale-110 transition-transform duration-300"></i>`;
+      }
+
+      async function initApp() {
+        updateCartBadge();
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/products`);
+          if (!response.ok) throw new Error("API load failed");
+          allProducts = await response.json();
+          filteredProducts = [...allProducts];
+
+          // ---- ĐOẠN CODE MỚI THÊM ĐỂ BẮT TỪ KHÓA TỪ TRANG INDEX ----
+          const urlParams = new URLSearchParams(window.location.search);
+          const searchKeyword = urlParams.get("search");
+          if (searchKeyword) {
+            // Điền từ khóa vào ô input của trang product
+            document.getElementById("search-keyword").value = searchKeyword;
+            // Cập nhật biến bộ lọc
+            currentFilter.keyword = searchKeyword.toLowerCase();
+            // Hiện nút X xóa từ khóa
+            const clearBtn = document.getElementById("clear-search-btn");
+            if (clearBtn) clearBtn.classList.remove("hidden");
+          }
+          // ---------------------------------------------------------
+          applyFiltersAndRender();
+        } catch (error) {
+          document.getElementById("products-grid").innerHTML = `
+            <div class="col-span-full text-center py-12 bg-red-50 text-red-600 rounded-xl font-bold border border-red-200">
+              ⚠️ Mất kết nối API Backend. Vui lòng bật Terminal chạy lệnh: <br/>
+              <code class="bg-white px-2 py-0.5 rounded text-black border font-mono">uvicorn main:app --reload</code>
+            </div>`;
+        }
+      }
+
+      function updateCartBadge() {
+        const cart = JSON.parse(localStorage.getItem("techstore_cart") || "[]");
+        const badge = document.getElementById("cart-count");
+        if (badge)
+          badge.innerText = cart.reduce(
+            (sum, item) => sum + Number(item.quantity || 1),
+            0,
+          );
+      }
+
+      function setCategory(cat) {
+        currentFilter.category = cat;
+        updateActiveUI("category-filter-list", cat, "data-cat");
+        applyFiltersAndRender();
+      }
+      function setBrand(brand) {
+        currentFilter.brand = brand;
+        updateActiveUI("brand-filter-list", brand, "data-brand");
+        applyFiltersAndRender();
+      }
+      function setSegment(seg) {
+        currentFilter.segment = seg;
+        updateActiveUI("segment-tags", seg, "data-seg");
+        applyFiltersAndRender();
+      }
+      function setPrice(range) {
+        currentFilter.priceRange = range;
+        updateActiveUI("price-links", range, "data-price");
+        applyFiltersAndRender();
+      }
+      function triggerSearch() {
+        currentFilter.keyword = document
+          .getElementById("search-keyword")
+          .value.trim()
+          .toLowerCase();
+        const clearBtn = document.getElementById("clear-search-btn");
+        clearBtn.classList.toggle("hidden", currentFilter.keyword.length === 0);
+        applyFiltersAndRender();
+      }
+      function clearSearch() {
+        document.getElementById("search-keyword").value = "";
+        triggerSearch();
+      }
+      function triggerSort() {
+        currentFilter.sortOrder = document.getElementById("sort-order").value;
+        applyFiltersAndRender();
+      }
+      function resetFilters() {
+        currentFilter = {
+          category: "all",
+          brand: "all",
+          segment: "all",
+          priceRange: "all",
+          keyword: "",
+          sortOrder: "default",
+        };
+        setCategory("all");
+        setBrand("all");
+        setSegment("all");
+        setPrice("all");
+        document.getElementById("sort-order").value = "default";
+        clearSearch();
+      }
+
+      function updateActiveUI(containerId, activeValue, dataAttribute) {
+        document
+          .querySelectorAll(`#${containerId} [${dataAttribute}]`)
+          .forEach((link) => {
+            link.classList.toggle(
+              "active",
+              link.getAttribute(dataAttribute) === activeValue,
+            );
+          });
+      }
+
+      function applyFiltersAndRender() {
+        let result = [...allProducts];
+
+        if (currentFilter.category !== "all") {
+          result = result.filter(
+            (p) =>
+              (p.category || p.cat || "").toLowerCase() ===
+              currentFilter.category.toLowerCase(),
+          );
+        }
+
+        // ĐÃ SỬA VỀ .toLowerCase() ĐỂ JS HIỂU ĐƯỢC
+        if (currentFilter.brand !== "all") {
+          result = result.filter(
+            (p) =>
+              (p.brand || "").toLowerCase() ===
+              currentFilter.brand.toLowerCase(),
+          );
+        }
+
+        // ĐÃ SỬA VỀ .toLowerCase()
+        if (currentFilter.segment !== "all") {
+          result = result.filter((p) =>
+            (p.name || "")
+              .toLowerCase()
+              .includes(currentFilter.segment.toLowerCase()),
+          );
+        }
+        if (currentFilter.priceRange !== "all") {
+          result = result.filter((p) => {
+            const price = Number(p.price) || 0;
+            if (currentFilter.priceRange === "under5") return price < 5000000;
+            if (currentFilter.priceRange === "5to15")
+              return price >= 5000000 && price < 15000000;
+            if (currentFilter.priceRange === "15to30")
+              return price >= 15000000 && price <= 30000000;
+            if (currentFilter.priceRange === "above30") return price > 30000000;
+            return true;
+          });
+        }
+
+        // ĐÃ SỬA VỀ .toLowerCase()
+        if (currentFilter.keyword !== "") {
+          result = result.filter((p) =>
+            (p.name || "").toLowerCase().includes(currentFilter.keyword),
+          );
+        }
+
+        if (currentFilter.sortOrder === "price_asc")
+          result.sort((a, b) => a.price - b.price);
+        else if (currentFilter.sortOrder === "price_desc")
+          result.sort((a, b) => b.price - a.price);
+        else if (currentFilter.sortOrder === "name_asc")
+          result.sort((a, b) => a.name.localeCompare(b.name));
+
+        document.getElementById("product-count-label").innerText =
+          `${result.length} Sản phẩm`;
+        renderGrid(result);
+      }
+
+      function renderGrid(list) {
+        const grid = document.getElementById("products-grid");
+        grid.innerHTML = "";
+        if (list.length === 0) {
+          grid.innerHTML = `
+            <div class="col-span-full py-16 text-center bg-white rounded-xl border border-gray-100 p-6">
+              <i class="fa-solid fa-box-open text-5xl text-gray-300 mb-3"></i>
+              <h4 class="font-bold text-gray-700 text-sm uppercase tracking-wider">Không tìm thấy thiết bị phù hợp</h4>
+              <button onclick="resetFilters()" class="mt-4 bg-black text-white text-xs font-bold px-4 py-2 uppercase tracking-widest hover:bg-red-600 transition-colors">Xóa bộ lọc</button>
+            </div>`;
+          return;
+        }
+        list.forEach((product) => {
+          const category = product.category || product.cat || "Thiết bị";
+          grid.innerHTML += `
+            <a href="detail.html?id=${encodeURIComponent(product.id)}" class="product-card group block">
+              <div>
+                <div class="h-32 sm:h-44 w-full flex items-center justify-center p-2 mb-3 overflow-hidden bg-gray-50 rounded-lg border border-gray-50/50">
+                  ${renderMedia(product.icon, product.name)}
+                </div>
+                <div class="mb-1 flex items-center justify-between gap-2">
+                  <span class="text-[9px] sm:text-[10px] text-gray-400 font-bold uppercase tracking-wider">${product.category_label || category}</span>
+                  <span class="text-[10px] font-black text-amber-500"><i class="fa-solid fa-star"></i> ${product.rating || 4.8}</span>
+                </div>
+                <h4 class="font-bold text-gray-900 text-xs sm:text-sm line-clamp-2 h-9 sm:h-10 mb-2 group-hover:text-red-600 transition-colors">${product.name}</h4>
+                <p class="text-[11px] font-bold text-gray-400">Kho ${product.stock || "OK"} · Da ban ${product.sold || 0}</p>
+              </div>
+              <div class="mt-2 pt-2 sm:pt-3 border-t border-gray-100 flex items-center justify-between">
+                <span class="text-red-600 font-black text-xs sm:text-base">${formatVND(product.price)}</span>
+                <button onclick="event.preventDefault(); addToCartFast(${JSON.stringify(product).replace(/"/g, "&quot;")})" class="bg-black hover:bg-red-600 text-white w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-colors shadow-sm">
+                  <i class="fa-solid fa-cart-plus text-[10px] sm:text-xs"></i>
+                </button>
+              </div>
+            </a>`;
+        });
+      }
+
+      function addToCartFast(prod) {
+        const cart = JSON.parse(localStorage.getItem("techstore_cart") || "[]");
+        const existing = cart.find((item) => String(item.id) === String(prod.id));
+        if (existing) existing.quantity = Number(existing.quantity || 1) + 1;
+        else cart.push({ ...prod, quantity: 1 });
+        localStorage.setItem("techstore_cart", JSON.stringify(cart));
+        updateCartBadge();
+        showToast(`Đã thêm: <strong>${prod.name}</strong>`);
+      }
+
+      function showToast(htmlMsg) {
+        const oldToast = document.getElementById("custom-toast");
+        if (oldToast) oldToast.remove();
+        const toast = document.createElement("div");
+        toast.id = "custom-toast";
+        toast.className =
+          "fixed bottom-5 right-5 bg-black text-white text-xs sm:text-sm px-4 py-3 rounded shadow-2xl flex items-center gap-3 z-50 border-l-4 border-red-600 transition-all";
+        toast.innerHTML = `<i class="fa-solid fa-check text-red-600 font-bold"></i> <div>${htmlMsg}</div>`;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+          if (toast) toast.remove();
+        }, 2000);
+      }
+      window.onload = initApp;
+    </script>
+  </body>
+</html>

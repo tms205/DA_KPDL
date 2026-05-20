@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TechStore AI - Tài khoản</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="store.css" />
+  </head>
+  <body class="min-h-screen text-gray-900">
+    <nav class="sticky top-0 z-50 bg-black text-white shadow-md">
+      <div class="mx-auto flex h-[70px] max-w-7xl items-center justify-between px-4">
+        <a href="index.html" class="flex items-center gap-3">
+          <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-black">
+            <i class="fa-solid fa-microchip text-xl"></i>
+          </span>
+          <span class="text-xl font-black tracking-widest">TECH<span class="-mt-1 block text-sm text-red-500">STORE AI</span></span>
+        </a>
+        <div class="flex items-center gap-3 text-xs font-bold uppercase tracking-wider">
+          <a href="product.html" class="rounded-full px-3 py-2 hover:bg-white/10">Sản phẩm</a>
+          <a href="cart.html" class="relative rounded-full px-3 py-2 hover:bg-white/10">
+            <i class="fa-solid fa-bag-shopping text-lg"></i>
+            <span id="cart-count" class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-black bg-red-600 text-xs">0</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="ui-shell py-8">
+      <section class="mb-6 grid gap-4 lg:grid-cols-[1fr_280px] lg:items-end">
+        <div>
+          <p class="ui-eyebrow">Tài khoản</p>
+          <h1 id="account-title" class="ui-title mt-2">Lịch sử mua hàng</h1>
+          <p class="ui-copy mt-3">Theo dõi đơn hàng đã đặt và tiếp tục mua sắm nhanh từ tài khoản của bạn.</p>
+        </div>
+        <a href="product.html" class="ui-btn ui-btn-primary w-full">
+          <i class="fa-solid fa-store"></i>Tiếp tục mua
+        </a>
+      </section>
+
+      <section class="grid gap-6 lg:grid-cols-[320px_1fr]">
+        <aside class="ui-panel p-5">
+          <div id="profile-box" class="text-sm text-gray-600"></div>
+          <div class="mt-5 grid gap-2">
+            <a id="admin-shortcut" href="admin.html" class="ui-btn ui-btn-ghost hidden">
+              <i class="fa-solid fa-chart-line"></i>Mở admin
+            </a>
+            <button onclick="logoutTechStore()" class="ui-btn ui-btn-primary w-full">
+              <i class="fa-solid fa-right-from-bracket"></i>Đăng xuất
+            </button>
+          </div>
+        </aside>
+        <div class="ui-panel p-5">
+          <div class="mb-4 flex items-center justify-between border-b pb-3">
+            <div>
+              <p class="ui-stat-label">Đơn hàng</p>
+              <h2 class="mt-1 font-black uppercase tracking-wide">Lịch sử giao dịch</h2>
+            </div>
+            <span id="order-count-pill" class="status-pill">0 đơn</span>
+          </div>
+          <div id="orders-list" class="space-y-3"></div>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+      async function initAccount() {
+        const user = getAuthUser();
+        if (!user) {
+          window.location.href = "login.html";
+          return;
+        }
+        document.getElementById("account-title").innerText = `Xin chào, ${user.name}`;
+        document.getElementById("admin-shortcut").classList.toggle("hidden", user.role !== "admin");
+        document.getElementById("profile-box").innerHTML = `
+          <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-black text-2xl font-black text-white">${user.name.charAt(0).toUpperCase()}</div>
+          <p class="ui-stat-label">Thông tin cá nhân</p>
+          <h2 class="mt-1 text-lg font-black text-black">${user.name}</h2>
+          <p class="mt-3"><b class="text-black">Email:</b> ${user.email}</p>
+          <p class="mt-2"><b class="text-black">SĐT:</b> ${user.phone || "Chưa cập nhật"}</p>
+          <p class="mt-2"><b class="text-black">Vai trò:</b> ${user.role}</p>
+        `;
+
+        try {
+          const response = await fetch(`${TECHSTORE_API}/api/account/orders`, {
+            headers: authHeaders(),
+          });
+          const orders = await response.json();
+          if (!response.ok) throw new Error(orders.detail || "Không tải được đơn hàng");
+          renderOrders(orders);
+        } catch (error) {
+          document.getElementById("orders-list").innerHTML = `<p class="text-sm text-red-600">${error.message}</p>`;
+        }
+      }
+
+      function renderOrders(orders) {
+        const list = document.getElementById("orders-list");
+        document.getElementById("order-count-pill").innerText = `${orders.length} đơn`;
+        if (!orders.length) {
+          list.innerHTML = `
+            <div class="py-12 text-center">
+              <i class="fa-solid fa-receipt mb-3 text-5xl text-gray-200"></i>
+              <p class="font-bold text-gray-500">Bạn chưa có đơn hàng nào.</p>
+              <a href="product.html" class="ui-btn ui-btn-primary mt-5">Mua hàng ngay</a>
+            </div>`;
+          return;
+        }
+        list.innerHTML = orders.map((order) => `
+          <article class="ui-panel-subtle p-4">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p class="text-xs font-black uppercase tracking-widest text-gray-400">${order.created_at}</p>
+                <h3 class="mt-1 font-black">${order.id}</h3>
+                <p class="mt-1 text-sm text-gray-500">${order.status} - ${order.payment_method}</p>
+              </div>
+              <div class="text-left sm:text-right">
+                <p class="ui-stat-label">Tổng tiền</p>
+                <p class="text-lg font-black text-red-600">${formatMoney(order.total)}</p>
+              </div>
+            </div>
+          </article>
+        `).join("");
+      }
+
+      window.addEventListener("DOMContentLoaded", initAccount);
+    </script>
+  </body>
+</html>

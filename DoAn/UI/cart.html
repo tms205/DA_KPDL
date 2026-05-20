@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TechStore AI - Giỏ hàng & Thanh toán</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="store.css" />
+    <style>
+      .checkout-input:focus {
+        border-color: #111827;
+        box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.08);
+        outline: none;
+      }
+      .toast {
+        animation: slideIn 0.2s ease-out;
+      }
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-gray-100 text-gray-900">
+    <nav class="sticky top-0 z-50 bg-black text-white shadow-md">
+      <div class="mx-auto flex h-[70px] max-w-7xl items-center justify-between px-4">
+        <a href="index.html" class="flex items-center gap-2">
+          <i class="fa-solid fa-microchip text-3xl"></i>
+          <span class="text-2xl font-black tracking-widest">
+            TECH<span class="block -mt-2 text-base text-red-600">STORE AI</span>
+          </span>
+        </a>
+        <div class="hidden items-center gap-8 text-sm font-bold uppercase tracking-wider md:flex">
+          <a href="index.html" class="hover:text-gray-300">Trang chủ</a>
+          <a href="product.html" class="hover:text-gray-300">Sản phẩm</a>
+          <a href="contact.html" class="hover:text-gray-300">Liên hệ</a>
+        </div>
+        <a href="cart.html" class="relative p-2">
+          <i class="fa-solid fa-bag-shopping text-2xl"></i>
+          <span
+            id="cart-count"
+            class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-black bg-red-600 text-xs font-bold"
+          >0</span>
+        </a>
+      </div>
+    </nav>
+
+    <main class="mx-auto max-w-7xl px-4 py-8">
+      <a
+        href="product.html"
+        class="mb-6 inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-black hover:text-red-600"
+      >
+        <i class="fa-solid fa-arrow-left"></i>
+        Tiếp tục mua sắm
+      </a>
+
+      <div class="mb-8 flex items-end justify-between gap-4 border-t-2 border-black pt-4">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-widest text-red-600">Checkout</p>
+          <h1 class="text-2xl font-black uppercase tracking-wide sm:text-3xl">
+            Giỏ hàng của bạn
+          </h1>
+        </div>
+        <div class="hidden text-right text-xs font-bold text-gray-500 sm:block">
+          <p>Miễn phí giao tiêu chuẩn từ 50.000.000 đ</p>
+          <p>Đổi trả 7 ngày, bảo hành theo hãng</p>
+        </div>
+      </div>
+
+      <div id="order-success" class="mb-6 hidden rounded-lg border border-green-200 bg-green-50 p-5"></div>
+
+      <div class="grid gap-6 lg:grid-cols-[minmax(0,1.55fr)_minmax(360px,0.85fr)]">
+        <section class="space-y-6">
+          <div class="ui-panel p-5">
+            <div class="mb-4 flex items-center justify-between border-b pb-3">
+              <h2 class="font-black uppercase tracking-wide">Sản phẩm đã chọn</h2>
+              <button
+                id="clear-cart-btn"
+                onclick="clearCart()"
+                class="hidden text-xs font-bold uppercase tracking-widest text-red-600 hover:text-red-700"
+              >
+                Xóa giỏ hàng
+              </button>
+            </div>
+            <div id="cart-items-container" class="divide-y divide-gray-100"></div>
+            <div id="empty-cart-msg" class="hidden py-14 text-center">
+              <i class="fa-solid fa-cart-shopping mb-4 text-6xl text-gray-200"></i>
+              <p class="mb-4 text-sm font-black uppercase tracking-wider text-gray-600">
+                Giỏ hàng đang trống
+              </p>
+              <a
+                href="product.html"
+                class="inline-flex bg-black px-6 py-3 text-xs font-bold uppercase tracking-widest text-white hover:bg-red-600"
+              >
+                Vào kho hàng ngay
+              </a>
+            </div>
+          </div>
+
+          <form id="checkout-form" class="ui-panel p-5" onsubmit="submitOrder(event)">
+            <div class="mb-4 border-b pb-3">
+              <h2 class="font-black uppercase tracking-wide">Thông tin nhận hàng</h2>
+            </div>
+            <div class="grid gap-4 sm:grid-cols-2">
+              <label class="block">
+                <span class="mb-1 block text-xs font-bold uppercase tracking-wider text-gray-500">Họ và tên *</span>
+                <input id="customer-name" required minlength="2" class="checkout-input w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-3 text-sm" placeholder="Nguyễn Văn A" />
+              </label>
+              <label class="block">
+                <span class="mb-1 block text-xs font-bold uppercase tracking-wider text-gray-500">Số điện thoại *</span>
+                <input id="customer-phone" required minlength="9" class="checkout-input w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-3 text-sm" placeholder="0907123456" />
+              </label>
+              <label class="block sm:col-span-2">
+                <span class="mb-1 block text-xs font-bold uppercase tracking-wider text-gray-500">Email</span>
+                <input id="customer-email" type="email" class="checkout-input w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-3 text-sm" placeholder="name@example.com" />
+              </label>
+              <label class="block sm:col-span-2">
+                <span class="mb-1 block text-xs font-bold uppercase tracking-wider text-gray-500">Địa chỉ nhận hàng *</span>
+                <input id="customer-address" required minlength="8" class="checkout-input w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-3 text-sm" placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành" />
+              </label>
+              <label class="block sm:col-span-2">
+                <span class="mb-1 block text-xs font-bold uppercase tracking-wider text-gray-500">Ghi chú</span>
+                <textarea id="customer-note" rows="3" class="checkout-input w-full resize-y rounded-lg border border-gray-300 bg-gray-50 px-3 py-3 text-sm" placeholder="Thời gian giao, yêu cầu xuất hóa đơn, cấu hình cần tư vấn thêm..."></textarea>
+              </label>
+            </div>
+
+            <div class="mt-6 grid gap-4 sm:grid-cols-2">
+              <div>
+                <p class="mb-2 text-xs font-bold uppercase tracking-wider text-gray-500">Phương thức giao hàng</p>
+                <div class="space-y-2">
+                  <label class="flex cursor-pointer items-center justify-between rounded-lg border border-gray-200 p-3 hover:border-black">
+                    <span>
+                      <span class="block text-sm font-bold">Giao tiêu chuẩn</span>
+                      <span class="text-xs text-gray-500">2-4 ngày</span>
+                    </span>
+                    <input type="radio" name="shipping" value="standard" checked onchange="renderCart()" />
+                  </label>
+                  <label class="flex cursor-pointer items-center justify-between rounded-lg border border-gray-200 p-3 hover:border-black">
+                    <span>
+                      <span class="block text-sm font-bold">Giao nhanh</span>
+                      <span class="text-xs text-gray-500">24-48 giờ</span>
+                    </span>
+                    <input type="radio" name="shipping" value="express" onchange="renderCart()" />
+                  </label>
+                  <label class="flex cursor-pointer items-center justify-between rounded-lg border border-gray-200 p-3 hover:border-black">
+                    <span>
+                      <span class="block text-sm font-bold">Nhận tại cửa hàng</span>
+                      <span class="text-xs text-gray-500">Trong ngày</span>
+                    </span>
+                    <input type="radio" name="shipping" value="pickup" onchange="renderCart()" />
+                  </label>
+                </div>
+              </div>
+              <div>
+                <p class="mb-2 text-xs font-bold uppercase tracking-wider text-gray-500">Thanh toán</p>
+                <div class="space-y-2">
+                  <label class="flex cursor-pointer items-center justify-between rounded-lg border border-gray-200 p-3 hover:border-black">
+                    <span>
+                      <span class="block text-sm font-bold">COD</span>
+                      <span class="text-xs text-gray-500">Thanh toán khi nhận hàng</span>
+                    </span>
+                    <input type="radio" name="payment" value="COD" checked />
+                  </label>
+                  <label class="flex cursor-pointer items-center justify-between rounded-lg border border-gray-200 p-3 hover:border-black">
+                    <span>
+                      <span class="block text-sm font-bold">Chuyển khoản</span>
+                      <span class="text-xs text-gray-500">TechStore AI gửi QR sau khi đặt</span>
+                    </span>
+                    <input type="radio" name="payment" value="BANK_TRANSFER" />
+                  </label>
+                </div>
+              </div>
+            </div>
+          </form>
+        </section>
+
+        <aside>
+          <div class="ui-panel sticky top-24 p-5">
+            <h2 class="mb-4 border-b pb-4 text-lg font-black uppercase tracking-wide">
+              Tóm tắt đơn hàng
+            </h2>
+            <div class="mb-4 flex gap-2">
+              <input
+                id="coupon-code"
+                class="checkout-input min-w-0 flex-1 rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm uppercase"
+                placeholder="Mã giảm giá"
+              />
+              <button
+                onclick="applyCoupon()"
+                class="bg-black px-4 py-2 text-xs font-black uppercase tracking-widest text-white hover:bg-red-600"
+              >
+                Áp dụng
+              </button>
+            </div>
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between text-gray-600">
+                <span>Số lượng</span>
+                <strong id="cart-total-qty" class="text-black">0</strong>
+              </div>
+              <div class="flex justify-between text-gray-600">
+                <span>Tạm tính</span>
+                <strong id="cart-subtotal" class="text-black">0 đ</strong>
+              </div>
+              <div class="flex justify-between text-gray-600">
+                <span>Giao hàng</span>
+                <strong id="cart-shipping" class="text-black">0 đ</strong>
+              </div>
+              <div class="flex justify-between text-gray-600">
+                <span>Giảm giá</span>
+                <strong id="cart-discount" class="text-red-600">0 đ</strong>
+              </div>
+              <div class="border-t pt-4">
+                <div class="flex items-center justify-between text-base font-black">
+                  <span>Tổng thanh toán</span>
+                  <span id="cart-total-price" class="text-xl text-red-600">0 đ</span>
+                </div>
+              </div>
+            </div>
+            <button
+              id="checkout-btn"
+              form="checkout-form"
+              type="submit"
+              class="mt-6 w-full bg-black py-4 text-xs font-black uppercase tracking-widest text-white shadow-md hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-300"
+            >
+              Đặt hàng
+            </button>
+            <p class="mt-3 text-center text-[11px] font-bold uppercase tracking-wider text-gray-400">
+              Hotline xác nhận đơn: 0907 123 456
+            </p>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <footer class="mt-12 border-t-4 border-red-600 bg-black px-4 py-8 text-center text-xs text-gray-500">
+      © 2026 TechStore AI. Mọi quyền được bảo lưu.
+    </footer>
+
+    <script src="app.js"></script>
+    <script>
+      const API_BASE = "http://127.0.0.1:8000";
+      const shippingFees = {
+        standard: 30000,
+        express: 70000,
+        pickup: 0,
+      };
+      let activeCoupon = "";
+
+      const money = (value) =>
+        new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        }).format(value || 0);
+
+      function getCart() {
+        const raw = JSON.parse(localStorage.getItem("techstore_cart") || "[]");
+        const merged = new Map();
+        raw.forEach((item) => {
+          const id = String(item.id);
+          const old = merged.get(id);
+          const quantity = Math.max(1, Number(item.quantity || 1));
+          if (old) old.quantity += quantity;
+          else merged.set(id, { ...item, quantity });
+        });
+        return [...merged.values()];
+      }
+
+      function saveCart(cart) {
+        localStorage.setItem("techstore_cart", JSON.stringify(cart));
+      }
+
+      function productMedia(product) {
+        const icon = product.icon || "fa-box";
+        if (icon.includes(".") || icon.includes("/") || icon.startsWith("http")) {
+          return `<img src="${icon}" alt="${product.name}" class="h-full w-full object-contain p-1" />`;
+        }
+        return `<i class="fa-solid ${icon} text-2xl text-black"></i>`;
+      }
+
+      function getSelectedValue(name) {
+        const selected = document.querySelector(`input[name="${name}"]:checked`);
+        return selected ? selected.value : "";
+      }
+
+      function calculateTotals(cart = getCart()) {
+        const subtotal = cart.reduce(
+          (sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 1),
+          0,
+        );
+        const shippingMethod = getSelectedValue("shipping") || "standard";
+        let shipping = subtotal >= 50000000 && shippingMethod !== "express"
+          ? 0
+          : shippingFees[shippingMethod] || 0;
+        const autoDiscount = subtotal >= 30000000 ? Math.round(subtotal * 0.03) : 0;
+        const couponDiscount = activeCoupon === "TECHSTOREAI" ? 200000 : 0;
+        const discount = Math.min(autoDiscount + couponDiscount, subtotal);
+        return {
+          subtotal,
+          shipping,
+          discount,
+          total: Math.max(subtotal + shipping - discount, 0),
+          quantity: cart.reduce((sum, item) => sum + Number(item.quantity || 1), 0),
+        };
+      }
+
+      function renderCart() {
+        const cart = getCart();
+        const container = document.getElementById("cart-items-container");
+        const emptyMsg = document.getElementById("empty-cart-msg");
+        const clearBtn = document.getElementById("clear-cart-btn");
+        const checkoutBtn = document.getElementById("checkout-btn");
+        saveCart(cart);
+
+        document.getElementById("cart-count").innerText = cart.reduce(
+          (sum, item) => sum + Number(item.quantity || 1),
+          0,
+        );
+
+        if (cart.length === 0) {
+          container.innerHTML = "";
+          emptyMsg.classList.remove("hidden");
+          clearBtn.classList.add("hidden");
+          checkoutBtn.disabled = true;
+        } else {
+          emptyMsg.classList.add("hidden");
+          clearBtn.classList.remove("hidden");
+          checkoutBtn.disabled = false;
+          container.innerHTML = cart
+            .map(
+              (item) => `
+              <div class="grid gap-4 py-4 sm:grid-cols-[88px_minmax(0,1fr)_150px_40px] sm:items-center">
+                <a href="detail.html?id=${encodeURIComponent(item.id)}" class="flex h-20 w-20 items-center justify-center overflow-hidden rounded-lg border border-gray-100 bg-gray-50">
+                  ${productMedia(item)}
+                </a>
+                <div class="min-w-0">
+                  <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">${item.brand || "TechStore"} / ${(item.category_label || item.category || "").toUpperCase()}</p>
+                  <a href="detail.html?id=${encodeURIComponent(item.id)}" class="line-clamp-2 font-bold text-black hover:text-red-600">${item.name}</a>
+                  <p class="mt-1 text-sm font-black text-red-600">${money(item.price)}</p>
+                  <p class="mt-1 text-xs text-gray-500">Kho còn: ${item.stock || "đang cập nhật"}</p>
+                </div>
+                <div class="flex w-max items-center rounded-lg border border-gray-200">
+                  <button onclick="changeQuantity('${item.id}', -1)" class="h-10 w-10 text-gray-500 hover:text-black">
+                    <i class="fa-solid fa-minus"></i>
+                  </button>
+                  <span class="w-10 text-center text-sm font-black">${item.quantity || 1}</span>
+                  <button onclick="changeQuantity('${item.id}', 1)" class="h-10 w-10 text-gray-500 hover:text-black">
+                    <i class="fa-solid fa-plus"></i>
+                  </button>
+                </div>
+                <button onclick="removeItem('${item.id}')" class="h-10 w-10 text-gray-300 hover:text-red-600" title="Xóa sản phẩm">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            `,
+            )
+            .join("");
+        }
+
+        const totals = calculateTotals(cart);
+        document.getElementById("cart-total-qty").innerText = totals.quantity;
+        document.getElementById("cart-subtotal").innerText = money(totals.subtotal);
+        document.getElementById("cart-shipping").innerText = money(totals.shipping);
+        document.getElementById("cart-discount").innerText = `-${money(totals.discount)}`;
+        document.getElementById("cart-total-price").innerText = money(totals.total);
+      }
+
+      function changeQuantity(id, delta) {
+        const cart = getCart().map((item) =>
+          String(item.id) === String(id)
+            ? { ...item, quantity: Math.max(1, Number(item.quantity || 1) + delta) }
+            : item,
+        );
+        saveCart(cart);
+        renderCart();
+      }
+
+      function removeItem(id) {
+        saveCart(getCart().filter((item) => String(item.id) !== String(id)));
+        renderCart();
+        showToast("Đã xóa sản phẩm khỏi giỏ hàng");
+      }
+
+      function clearCart() {
+        localStorage.removeItem("techstore_cart");
+        renderCart();
+      }
+
+      function applyCoupon() {
+        const value = document.getElementById("coupon-code").value.trim().toUpperCase();
+        if (!value) {
+          activeCoupon = "";
+          renderCart();
+          return;
+        }
+        if (value !== "TECHSTOREAI") {
+          showToast("Mã giảm giá chưa hợp lệ");
+          return;
+        }
+        activeCoupon = value;
+        renderCart();
+        showToast("Đã áp dụng mã TECHSTOREAI");
+      }
+
+      async function submitOrder(event) {
+        event.preventDefault();
+        const cart = getCart();
+        if (cart.length === 0) return showToast("Giỏ hàng đang trống");
+
+        const checkoutBtn = document.getElementById("checkout-btn");
+        checkoutBtn.disabled = true;
+        checkoutBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Đang tạo đơn';
+
+        const payload = {
+          customer: {
+            name: document.getElementById("customer-name").value.trim(),
+            phone: document.getElementById("customer-phone").value.trim(),
+            email: document.getElementById("customer-email").value.trim(),
+            address: document.getElementById("customer-address").value.trim(),
+            note: document.getElementById("customer-note").value.trim(),
+          },
+          items: cart.map((item) => ({
+            id: item.id,
+            quantity: Number(item.quantity || 1),
+          })),
+          payment_method: getSelectedValue("payment") || "COD",
+          shipping_method: getSelectedValue("shipping") || "standard",
+        };
+
+        try {
+          const response = await fetch(`${API_BASE}/api/orders`, {
+            method: "POST",
+            headers: authHeaders({ "Content-Type": "application/json" }),
+            body: JSON.stringify(payload),
+          });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.detail || "Không thể tạo đơn hàng");
+
+          localStorage.removeItem("techstore_cart");
+          localStorage.setItem("techstore_last_order", data.id);
+          document.getElementById("checkout-form").reset();
+          activeCoupon = "";
+          renderOrderSuccess(data);
+          renderCart();
+          showToast("Đặt hàng thành công");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } catch (error) {
+          showToast(error.message || "Lỗi kết nối backend");
+        } finally {
+          checkoutBtn.disabled = false;
+          checkoutBtn.innerText = "Đặt hàng";
+        }
+      }
+
+      function renderOrderSuccess(order) {
+        const box = document.getElementById("order-success");
+        box.classList.remove("hidden");
+        box.innerHTML = `
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p class="text-xs font-bold uppercase tracking-widest text-green-700">Đặt hàng thành công</p>
+              <h2 class="mt-1 text-2xl font-black text-green-900">Mã đơn ${order.id}</h2>
+              <p class="mt-1 text-sm text-green-800">Trạng thái: ${order.status} · ${order.shipping_label} · Dự kiến ${order.eta}</p>
+            </div>
+            <div class="text-left sm:text-right">
+              <p class="text-xs font-bold uppercase tracking-widest text-green-700">Tổng thanh toán</p>
+              <p class="text-2xl font-black text-green-900">${money(order.total)}</p>
+            </div>
+          </div>
+        `;
+      }
+
+      function showToast(message) {
+        const oldToast = document.getElementById("custom-toast");
+        if (oldToast) oldToast.remove();
+        const toast = document.createElement("div");
+        toast.id = "custom-toast";
+        toast.className =
+          "toast fixed bottom-5 right-5 z-50 rounded-lg border-l-4 border-red-600 bg-black px-4 py-3 text-sm font-bold text-white shadow-2xl";
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2300);
+      }
+
+      window.onload = renderCart;
+    </script>
+  </body>
+</html>

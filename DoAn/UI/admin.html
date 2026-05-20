@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TechStore AI - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="store.css" />
+  </head>
+  <body class="min-h-screen text-gray-900">
+    <nav class="sticky top-0 z-50 bg-black text-white shadow-md">
+      <div class="mx-auto flex h-[70px] max-w-7xl items-center justify-between px-4">
+        <a href="index.html" class="flex items-center gap-3">
+          <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-black">
+            <i class="fa-solid fa-microchip text-xl"></i>
+          </span>
+          <span class="text-xl font-black tracking-widest">TECH<span class="-mt-1 block text-sm text-red-500">STORE AI</span></span>
+        </a>
+        <div class="flex items-center gap-3 text-xs font-bold uppercase tracking-wider">
+          <a href="product.html" class="rounded-full px-3 py-2 hover:bg-white/10">Cửa hàng</a>
+          <a href="account.html" class="rounded-full px-3 py-2 hover:bg-white/10">Tài khoản</a>
+          <button onclick="logoutTechStore()" class="rounded-full bg-white px-3 py-2 text-black hover:bg-red-600 hover:text-white">Thoát</button>
+        </div>
+      </div>
+    </nav>
+
+    <main class="ui-shell py-8">
+      <section class="mb-6 grid gap-4 lg:grid-cols-[1fr_320px] lg:items-end">
+        <div>
+          <p class="ui-eyebrow">Admin dashboard</p>
+          <h1 class="ui-title mt-2">Quản lý TechStore AI</h1>
+          <p class="ui-copy mt-3 max-w-2xl">
+            Theo dõi doanh thu, đơn hàng, tồn kho, khách hàng và tin nhắn liên hệ trong một màn hình điều hành gọn gàng.
+          </p>
+        </div>
+        <div class="ui-panel-subtle p-4">
+          <p class="ui-stat-label">Tài khoản đang nhập</p>
+          <p id="admin-user-name" class="mt-1 font-black">Admin</p>
+          <p class="mt-1 text-xs text-gray-500">Quyền quản trị hệ thống</p>
+        </div>
+      </section>
+
+      <div class="mb-6 flex flex-wrap gap-2 text-xs font-black uppercase tracking-widest">
+        <button class="tab-btn ui-btn ui-btn-primary" data-tab="dashboard" onclick="switchTab('dashboard')">
+          <i class="fa-solid fa-chart-line"></i>Tổng quan
+        </button>
+        <button class="tab-btn ui-btn ui-btn-ghost" data-tab="products" onclick="switchTab('products')">
+          <i class="fa-solid fa-box"></i>Sản phẩm
+        </button>
+        <button class="tab-btn ui-btn ui-btn-ghost" data-tab="orders" onclick="switchTab('orders')">
+          <i class="fa-solid fa-receipt"></i>Đơn hàng
+        </button>
+        <button class="tab-btn ui-btn ui-btn-ghost" data-tab="customers" onclick="switchTab('customers')">
+          <i class="fa-solid fa-users"></i>Khách hàng
+        </button>
+        <button class="tab-btn ui-btn ui-btn-ghost" data-tab="messages" onclick="switchTab('messages')">
+          <i class="fa-solid fa-envelope"></i>Liên hệ
+        </button>
+      </div>
+
+      <section id="dashboard-tab" class="tab-panel space-y-6">
+        <div id="metric-grid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"></div>
+        <div class="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+          <div class="ui-panel p-5">
+            <div class="mb-4 flex items-center justify-between border-b pb-3">
+              <h2 class="font-black uppercase tracking-wide">Đơn hàng mới</h2>
+              <button onclick="switchTab('orders')" class="text-xs font-black uppercase tracking-widest text-red-600">Xem tất cả</button>
+            </div>
+            <div id="recent-orders" class="space-y-3"></div>
+          </div>
+          <div class="ui-panel p-5">
+            <div class="mb-4 flex items-center justify-between border-b pb-3">
+              <h2 class="font-black uppercase tracking-wide">Cần nhập hàng</h2>
+              <button onclick="switchTab('products')" class="text-xs font-black uppercase tracking-widest text-red-600">Mo kho</button>
+            </div>
+            <div id="low-stock" class="space-y-3"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="products-tab" class="tab-panel hidden">
+        <div class="grid gap-6 lg:grid-cols-[360px_1fr]">
+          <form class="ui-panel p-5" onsubmit="saveProduct(event)">
+            <div class="mb-4 border-b pb-3">
+              <p class="ui-stat-label">Quản lý kho</p>
+              <h2 id="product-form-title" class="mt-1 font-black uppercase tracking-wide">Thêm sản phẩm</h2>
+            </div>
+            <input id="product-id" type="hidden" />
+            <div class="grid gap-3">
+              <label class="block">
+                <span class="ui-stat-label mb-1 block">Tên sản phẩm</span>
+                <input id="product-name" required class="w-full border bg-gray-50 px-3 py-3 text-sm" />
+              </label>
+              <div class="grid grid-cols-2 gap-3">
+                <label class="block">
+                  <span class="ui-stat-label mb-1 block">Thương hiệu</span>
+                  <input id="product-brand" required class="w-full border bg-gray-50 px-3 py-3 text-sm" />
+                </label>
+                <label class="block">
+                  <span class="ui-stat-label mb-1 block">Danh mục</span>
+                  <select id="product-category" class="w-full border bg-gray-50 px-3 py-3 text-sm">
+                    <option value="smartphone">Điện thoại</option>
+                    <option value="notebook">Laptop</option>
+                    <option value="desktop">PC</option>
+                    <option value="monitor">Màn hình</option>
+                    <option value="mouse">Chuột</option>
+                    <option value="keyboard">Bàn phím</option>
+                    <option value="headphone">Tai nghe</option>
+                    <option value="clocks">Đồng hồ</option>
+                    <option value="printer">Máy in</option>
+                    <option value="tv">TV</option>
+                  </select>
+                </label>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <label class="block">
+                  <span class="ui-stat-label mb-1 block">Giá bán</span>
+                  <input id="product-price" required type="number" min="0" class="w-full border bg-gray-50 px-3 py-3 text-sm" />
+                </label>
+                <label class="block">
+                  <span class="ui-stat-label mb-1 block">Tồn kho</span>
+                  <input id="product-stock" required type="number" min="0" class="w-full border bg-gray-50 px-3 py-3 text-sm" />
+                </label>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <label class="block">
+                  <span class="ui-stat-label mb-1 block">Rating</span>
+                  <input id="product-rating" type="number" min="0" max="5" step="0.1" value="4.7" class="w-full border bg-gray-50 px-3 py-3 text-sm" />
+                </label>
+                <label class="block">
+                  <span class="ui-stat-label mb-1 block">Icon/ảnh</span>
+                  <input id="product-icon" placeholder="fa-mouse hoặc img/p1.jpg" class="w-full border bg-gray-50 px-3 py-3 text-sm" />
+                </label>
+              </div>
+              <button class="ui-btn ui-btn-primary w-full" type="submit">
+                <i class="fa-solid fa-floppy-disk"></i>Lưu sản phẩm
+              </button>
+              <button class="ui-btn ui-btn-ghost w-full" type="button" onclick="resetProductForm()">
+                <i class="fa-solid fa-rotate-left"></i>Làm mới
+              </button>
+            </div>
+          </form>
+
+          <div class="ui-panel p-5">
+            <div class="mb-4 flex flex-col gap-3 border-b pb-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p class="ui-stat-label">Danh sách</p>
+                <h2 class="mt-1 font-black uppercase tracking-wide">Kho sản phẩm</h2>
+              </div>
+              <select id="admin-product-category-filter" onchange="renderProducts()" class="w-full border bg-gray-50 px-3 py-3 text-sm sm:w-44">
+                <option value="all">Tất cả danh mục</option>
+                <option value="smartphone">Điện thoại</option>
+                <option value="notebook">Laptop</option>
+                <option value="desktop">PC</option>
+                <option value="monitor">Màn hình</option>
+                <option value="mouse">Chuột</option>
+                <option value="keyboard">Bàn phím</option>
+                <option value="headphone">Tai nghe</option>
+                <option value="clocks">Đồng hồ</option>
+                <option value="printer">Máy in</option>
+                <option value="tv">TV</option>
+              </select>
+              <div class="relative w-full sm:w-72">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-sm text-gray-400"></i>
+                <input id="admin-product-search" oninput="renderProducts()" placeholder="Tìm tên hoặc hãng..." class="w-full border bg-gray-50 py-3 pl-9 pr-3 text-sm" />
+              </div>
+            </div>
+            <div id="products-table" class="overflow-x-auto"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="orders-tab" class="tab-panel hidden ui-panel p-5">
+        <div class="mb-4 border-b pb-3">
+          <p class="ui-stat-label">Van hanh</p>
+          <h2 class="mt-1 font-black uppercase tracking-wide">Quản lý đơn hàng</h2>
+        </div>
+        <div id="orders-table" class="overflow-x-auto"></div>
+      </section>
+
+      <section id="customers-tab" class="tab-panel hidden ui-panel p-5">
+        <div class="mb-4 border-b pb-3">
+          <p class="ui-stat-label">CRM</p>
+          <h2 class="mt-1 font-black uppercase tracking-wide">Khách hàng</h2>
+        </div>
+        <div id="customers-table" class="overflow-x-auto"></div>
+      </section>
+
+      <section id="messages-tab" class="tab-panel hidden ui-panel p-5">
+        <div class="mb-4 border-b pb-3">
+          <p class="ui-stat-label">Chăm sóc khách hàng</p>
+          <h2 class="mt-1 font-black uppercase tracking-wide">Tin nhắn liên hệ</h2>
+        </div>
+        <div id="messages-table" class="grid gap-3 md:grid-cols-2"></div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+      let adminProducts = [];
+      let adminOrders = [];
+
+      function toInlineJson(data) {
+        return JSON.stringify(data).replace(/'/g, "&#39;");
+      }
+
+      async function adminFetch(path, options = {}) {
+        const response = await fetch(`${TECHSTORE_API}${path}`, {
+          ...options,
+          headers: authHeaders({
+            "Content-Type": "application/json",
+            ...(options.headers || {}),
+          }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || "Không có quyền truy cập");
+        return data;
+      }
+
+      async function initAdmin() {
+        const user = getAuthUser();
+        if (!user || user.role !== "admin") {
+          window.location.href = "login.html";
+          return;
+        }
+        document.getElementById("admin-user-name").textContent = user.name;
+        try {
+          await Promise.all([loadDashboard(), loadProducts(), loadOrders(), loadCustomers(), loadMessages()]);
+        } catch (error) {
+          toast(error.message || "Không tải được dữ liệu admin");
+        }
+      }
+
+      function switchTab(tab) {
+        document.querySelectorAll(".tab-panel").forEach((panel) => panel.classList.add("hidden"));
+        document.getElementById(`${tab}-tab`).classList.remove("hidden");
+        document.querySelectorAll(".tab-btn").forEach((btn) => {
+          const active = btn.dataset.tab === tab;
+          btn.className = active ? "tab-btn ui-btn ui-btn-primary" : "tab-btn ui-btn ui-btn-ghost";
+        });
+      }
+
+      async function loadDashboard() {
+        const data = await adminFetch("/api/admin/dashboard");
+        const metrics = [
+          ["Sản phẩm", data.metrics.products, "fa-box", "Tổng mặt hàng đang kinh doanh"],
+          ["Khách hàng", data.metrics.customers, "fa-users", "Tài khoản customer"],
+          ["Đơn hàng", data.metrics.orders, "fa-receipt", "Đơn đã ghi nhận"],
+          ["Doanh thu", formatMoney(data.metrics.revenue), "fa-chart-line", "Tổng giá trị đơn hàng"],
+        ];
+        document.getElementById("metric-grid").innerHTML = metrics
+          .map(
+            (item) => `
+              <div class="ui-stat">
+                <div class="flex items-start justify-between gap-3">
+                  <div>
+                    <p class="ui-stat-label">${item[0]}</p>
+                    <p class="ui-stat-value">${item[1]}</p>
+                    <p class="mt-2 text-xs text-gray-500">${item[3]}</p>
+                  </div>
+                  <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-red-50 text-red-600">
+                    <i class="fa-solid ${item[2]}"></i>
+                  </span>
+                </div>
+              </div>
+            `,
+          )
+          .join("");
+
+        document.getElementById("recent-orders").innerHTML = data.recent_orders.length
+          ? data.recent_orders
+              .map(
+                (o) => `
+                  <div class="ui-panel-subtle p-3">
+                    <div class="flex items-start justify-between gap-3">
+                      <div>
+                        <b>${o.id}</b>
+                        <p class="mt-1 text-sm text-gray-600">${o.customer_name} - ${o.phone}</p>
+                      </div>
+                      <span class="status-pill">${o.status}</span>
+                    </div>
+                    <p class="mt-2 font-black text-red-600">${formatMoney(o.total)}</p>
+                  </div>
+                `,
+              )
+              .join("")
+          : '<p class="py-6 text-center text-sm text-gray-400">Chưa có đơn hàng.</p>';
+
+        document.getElementById("low-stock").innerHTML = data.low_stock.length
+          ? data.low_stock
+              .map(
+                (p) => `
+                  <div class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 p-3">
+                    <div class="min-w-0">
+                      <p class="truncate font-bold">${p.name}</p>
+                      <p class="text-xs text-gray-500">${p.brand} - ${p.category_label || p.category}</p>
+                    </div>
+                    <span class="status-pill warn">${p.stock} sp</span>
+                  </div>
+                `,
+              )
+              .join("")
+          : '<p class="py-6 text-center text-sm text-gray-400">Tồn kho đang ổn.</p>';
+      }
+
+      async function loadProducts() {
+        adminProducts = await adminFetch("/api/products");
+        renderProducts();
+      }
+
+      function renderProducts() {
+        const keyword = (document.getElementById("admin-product-search")?.value || "").toLowerCase();
+        const category = document.getElementById("admin-product-category-filter")?.value || "all";
+        const list = adminProducts.filter(
+          (p) =>
+            (category === "all" || (p.category || p.cat || "").toLowerCase() === category.toLowerCase()) &&
+            (p.name.toLowerCase().includes(keyword) || p.brand.toLowerCase().includes(keyword)),
+        );
+        document.getElementById("products-table").innerHTML = `
+          <table class="ui-table min-w-[820px]">
+            <thead>
+              <tr><th>Sản phẩm</th><th>Danh mục</th><th>Giá</th><th>Kho</th><th>Đã bán</th><th></th></tr>
+            </thead>
+            <tbody>${list
+              .map(
+                (p) => `
+                  <tr>
+                    <td><b>${p.name}</b><p class="text-xs text-gray-500">${p.brand} - ${p.id}</p></td>
+                    <td>${p.category_label || p.category}</td>
+                    <td class="font-bold text-red-600">${formatMoney(p.price)}</td>
+                    <td><span class="status-pill ${Number(p.stock) <= 10 ? "warn" : "good"}">${p.stock}</span></td>
+                    <td>${p.sold}</td>
+                    <td class="text-right">
+                      <button title="Sửa" onclick='editProduct(${toInlineJson(p)})' class="mr-2 rounded-lg px-2 py-2 text-black hover:bg-gray-100 hover:text-red-600"><i class="fa-solid fa-pen"></i></button>
+                      <button title="Xóa" onclick="deleteProduct('${p.id}')" class="rounded-lg px-2 py-2 text-gray-400 hover:bg-red-50 hover:text-red-600"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                  </tr>
+                `,
+              )
+              .join("")}</tbody>
+          </table>`;
+      }
+
+      function editProduct(product) {
+        document.getElementById("product-form-title").innerText = "Cập nhật sản phẩm";
+        document.getElementById("product-id").value = product.id;
+        document.getElementById("product-name").value = product.name;
+        document.getElementById("product-brand").value = product.brand;
+        document.getElementById("product-category").value = product.category || product.cat;
+        document.getElementById("product-price").value = product.price;
+        document.getElementById("product-stock").value = product.stock;
+        document.getElementById("product-rating").value = product.rating || 4.7;
+        document.getElementById("product-icon").value = product.icon || "fa-box";
+        window.scrollTo({ top: 120, behavior: "smooth" });
+      }
+
+      function resetProductForm() {
+        document.getElementById("product-form-title").innerText = "Thêm sản phẩm";
+        document.querySelector("#products-tab form").reset();
+        document.getElementById("product-id").value = "";
+        document.getElementById("product-rating").value = "4.7";
+      }
+
+      async function saveProduct(event) {
+        event.preventDefault();
+        const productId = document.getElementById("product-id").value;
+        const payload = {
+          id: productId,
+          name: document.getElementById("product-name").value.trim(),
+          brand: document.getElementById("product-brand").value.trim(),
+          category: document.getElementById("product-category").value,
+          price: Number(document.getElementById("product-price").value || 0),
+          stock: Number(document.getElementById("product-stock").value || 0),
+          rating: Number(document.getElementById("product-rating").value || 4.7),
+          icon: document.getElementById("product-icon").value.trim() || "fa-box",
+        };
+        await adminFetch(productId ? `/api/admin/products/${productId}` : "/api/admin/products", {
+          method: productId ? "PUT" : "POST",
+          body: JSON.stringify(payload),
+        });
+        toast("Đã lưu sản phẩm");
+        resetProductForm();
+        await Promise.all([loadProducts(), loadDashboard()]);
+      }
+
+      async function deleteProduct(id) {
+        if (!confirm("Xóa sản phẩm này?")) return;
+        await adminFetch(`/api/admin/products/${id}`, { method: "DELETE" });
+        toast("Đã xóa sản phẩm");
+        await Promise.all([loadProducts(), loadDashboard()]);
+      }
+
+      async function loadOrders() {
+        adminOrders = await adminFetch("/api/admin/orders");
+        document.getElementById("orders-table").innerHTML = `
+          <table class="ui-table min-w-[960px]">
+            <thead>
+              <tr><th>Mã đơn</th><th>Khách hàng</th><th>Tổng tiền</th><th>Thanh toán</th><th>Trạng thái</th><th>Ngày tạo</th></tr>
+            </thead>
+            <tbody>${adminOrders
+              .map(
+                (o) => `
+                  <tr>
+                    <td class="font-black">${o.id}</td>
+                    <td><b>${o.customer.name}</b><p class="text-xs text-gray-500">${o.customer.phone} - ${o.customer.email || "không email"}</p></td>
+                    <td class="font-bold text-red-600">${formatMoney(o.total)}</td>
+                    <td>${o.payment_method}</td>
+                    <td>
+                      <select onchange="updateOrderStatus('${o.id}', this.value)" class="border bg-white px-2 py-2 text-xs">
+                        ${["Đã tiếp nhận", "Đang xử lý", "Đang giao", "Hoàn thành", "Đã hủy", o.status]
+                          .filter((value, index, arr) => arr.indexOf(value) === index)
+                          .map((status) => `<option ${status === o.status ? "selected" : ""}>${status}</option>`)
+                          .join("")}
+                      </select>
+                    </td>
+                    <td class="text-xs text-gray-500">${o.created_at}</td>
+                    <td class="text-right">
+                      <button title="Sua don" onclick='editOrder(${toInlineJson(o)})' class="mr-2 rounded-lg px-2 py-2 text-black hover:bg-gray-100 hover:text-red-600"><i class="fa-solid fa-pen"></i></button>
+                      <button title="Xoa don" onclick="deleteOrder('${o.id}')" class="rounded-lg px-2 py-2 text-gray-400 hover:bg-red-50 hover:text-red-600"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                  </tr>
+                `,
+              )
+              .join("")}</tbody>
+          </table>`;
+      }
+
+      async function updateOrderStatus(id, status) {
+        await adminFetch(`/api/admin/orders/${id}/status`, {
+          method: "PATCH",
+          body: JSON.stringify({ status }),
+        });
+        toast("Đã cập nhật trạng thái đơn");
+        await Promise.all([loadOrders(), loadDashboard()]);
+      }
+
+      async function editOrder(order) {
+        const name = prompt("Ten khach hang", order.customer.name || "");
+        if (name === null) return;
+        const phone = prompt("So dien thoai", order.customer.phone || "");
+        if (phone === null) return;
+        const email = prompt("Email", order.customer.email || "");
+        if (email === null) return;
+        const address = prompt("Dia chi giao hang", order.customer.address || "");
+        if (address === null) return;
+        const note = prompt("Ghi chu", order.customer.note || "");
+        if (note === null) return;
+        const status = prompt("Trang thai", order.status || "");
+        if (status === null) return;
+        const payment = prompt("Hinh thuc thanh toan", order.payment_method || "COD");
+        if (payment === null) return;
+        const shipping = prompt("Giao hang: standard, express hoac pickup", order.shipping_method || "standard");
+        if (shipping === null) return;
+        await adminFetch(`/api/admin/orders/${order.id}`, {
+          method: "PUT",
+          body: JSON.stringify({
+            customer: { name, phone, email, address, note },
+            status,
+            payment_method: payment,
+            shipping_method: shipping,
+          }),
+        });
+        toast("Da cap nhat don hang");
+        await Promise.all([loadOrders(), loadDashboard()]);
+      }
+
+      async function deleteOrder(id) {
+        if (!confirm("Xoa don hang nay?")) return;
+        await adminFetch(`/api/admin/orders/${id}`, { method: "DELETE" });
+        toast("Da xoa don hang");
+        await Promise.all([loadOrders(), loadDashboard(), loadCustomers()]);
+      }
+
+      async function loadCustomers() {
+        const customers = await adminFetch("/api/admin/customers");
+        document.getElementById("customers-table").innerHTML = `
+          <table class="ui-table min-w-[820px]">
+            <thead>
+              <tr><th>Khách hàng</th><th>Vai trò</th><th>Segment</th><th>Số đơn</th><th>Đã chi</th><th>Ngày tạo</th></tr>
+            </thead>
+            <tbody>${customers
+              .map(
+                (c) => `
+                  <tr>
+                    <td><b>${c.name}</b><p class="text-xs text-gray-500">${c.email} - ${c.phone || "chưa có SĐT"}</p></td>
+                    <td><span class="status-pill">${c.role}</span></td>
+                    <td>${c.segment || "general"}</td>
+                    <td>${c.order_count}</td>
+                    <td class="font-bold text-red-600">${formatMoney(c.total_spent)}</td>
+                    <td class="text-xs text-gray-500">${c.created_at}</td>
+                    <td class="text-right">
+                      <button title="Sua khach" onclick='editCustomer(${toInlineJson(c)})' class="mr-2 rounded-lg px-2 py-2 text-black hover:bg-gray-100 hover:text-red-600"><i class="fa-solid fa-pen"></i></button>
+                      <button title="Xoa khach" onclick="deleteCustomer('${c.id}')" class="rounded-lg px-2 py-2 text-gray-400 hover:bg-red-50 hover:text-red-600"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                  </tr>
+                `,
+              )
+              .join("")}</tbody>
+          </table>`;
+      }
+
+      async function editCustomer(customer) {
+        const name = prompt("Ten khach hang", customer.name || "");
+        if (name === null) return;
+        const email = prompt("Email", customer.email || "");
+        if (email === null) return;
+        const phone = prompt("So dien thoai", customer.phone || "");
+        if (phone === null) return;
+        const segment = prompt("Segment", customer.segment || "general");
+        if (segment === null) return;
+        const role = prompt("Vai tro: customer hoac admin", customer.role || "customer");
+        if (role === null) return;
+        await adminFetch(`/api/admin/customers/${customer.id}`, {
+          method: "PUT",
+          body: JSON.stringify({ name, email, phone, segment, role }),
+        });
+        toast("Da cap nhat khach hang");
+        await Promise.all([loadCustomers(), loadDashboard()]);
+      }
+
+      async function deleteCustomer(id) {
+        if (!confirm("Xoa khach hang nay? Don hang cu se duoc giu lai nhung ngat lien ket tai khoan.")) return;
+        await adminFetch(`/api/admin/customers/${id}`, { method: "DELETE" });
+        toast("Da xoa khach hang");
+        await Promise.all([loadCustomers(), loadDashboard()]);
+      }
+
+      async function loadMessages() {
+        const messages = await adminFetch("/api/admin/messages");
+        document.getElementById("messages-table").innerHTML = messages.length
+          ? messages
+              .map(
+                (m) => `
+                  <article class="ui-panel-subtle p-4 text-sm">
+                    <div class="flex items-start justify-between gap-3">
+                      <div>
+                        <b>${m.name}</b>
+                        <p class="mt-1 text-xs text-gray-500">${m.email} - ${m.phone || "chưa có SĐT"}</p>
+                      </div>
+                      <span class="status-pill">${m.status}</span>
+                    </div>
+                    <p class="mt-3 leading-6 text-gray-700">${m.message}</p>
+                    <div class="mt-3 flex items-center justify-between gap-3">
+                      <p class="text-xs text-gray-400">${m.created_at}</p>
+                      <button title="Xoa lien he" onclick="deleteMessage('${m.id}')" class="rounded-lg px-2 py-2 text-gray-400 hover:bg-red-50 hover:text-red-600"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+                  </article>
+                `,
+              )
+              .join("")
+          : '<p class="col-span-full py-8 text-center text-sm text-gray-400">Chưa có tin nhắn.</p>';
+      }
+
+      async function deleteMessage(id) {
+        if (!confirm("Xoa tin nhan lien he nay?")) return;
+        await adminFetch(`/api/admin/messages/${id}`, { method: "DELETE" });
+        toast("Da xoa lien he");
+        await loadMessages();
+      }
+
+      window.addEventListener("DOMContentLoaded", initAdmin);
+    </script>
+  </body>
+</html>

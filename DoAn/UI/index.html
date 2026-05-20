@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TechStore AI - Cửa Hàng Công Nghệ & Gợi Ý Thông Minh</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="store.css" />
+    <script src="app.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#000000",
+              secondary: "#dc2626",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .section-title {
+        width: 300px;
+        height: 50px;
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4);
+        background-color: white;
+        text-align: center;
+        border-radius: 10px;
+        line-height: 50px;
+        font-weight: bold;
+        font-size: 20px;
+      }
+      .product-card {
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        padding: 15px;
+        background: white;
+        text-align: center;
+        transition: 0.2s;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+      }
+      .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.35);
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 text-gray-800 font-sans">
+    <nav
+      class="bg-black text-white sticky top-0 z-50 h-[70px] shadow-md flex items-center"
+    >
+      <div
+  class="max-w-7xl mx-auto px-4 w-full flex items-center justify-between gap-6"
+>
+  <!-- LOGO -->
+  <a
+    href="index.html"
+    class="flex items-center gap-2 cursor-pointer shrink-0"
+  >
+    <i class="fa-solid fa-microchip text-white text-3xl"></i>
+
+    <div>
+      <span class="font-bold text-2xl tracking-widest text-white block">
+        TECH
+      </span>
+
+      <span
+        class="text-red-600 text-sm tracking-[4px] font-bold -mt-1 block"
+      >
+        STORE AI
+      </span>
+    </div>
+  </a>
+
+  <!-- MENU -->
+  <ul
+    class="hidden md:flex items-center gap-5 text-sm font-semibold uppercase tracking-wider flex-1 justify-center whitespace-nowrap"
+  >
+    <li>
+      <a href="index.html" class="hover:text-gray-400 transition-colors">
+        Trang Chủ
+      </a>
+    </li>
+
+    <li>
+      <a href="product.html" class="hover:text-gray-400 transition-colors">
+        Sản Phẩm
+      </a>
+    </li>
+
+    <li>
+      <a href="contact.html" class="hover:text-gray-400 transition-colors">
+        Liên Hệ
+      </a>
+    </li>
+  </ul>
+
+  <!-- SEARCH + CART -->
+  <div class="flex items-center gap-3 shrink-0">
+    <div class="relative hidden sm:block">
+      <input
+        id="global-search-input"
+        type="text"
+        placeholder="Tìm đồ công nghệ..."
+        class="w-[170px] lg:w-[220px] h-[36px] pl-4 pr-10 rounded-full bg-white text-black text-sm focus:outline-none"
+        onkeypress="if (event.key === 'Enter') executeGlobalSearch();"
+      />
+
+      <button
+        onclick="executeGlobalSearch()"
+        class="absolute right-1 top-0.5 w-[32px] h-[32px] text-black rounded-full hover:bg-gray-200 flex items-center justify-center"
+      >
+        <i class="fa-solid fa-magnifying-glass text-sm"></i>
+      </button>
+    </div>
+
+    <a
+      href="cart.html"
+      class="relative text-white hover:text-gray-300 p-2 transition-colors"
+    >
+      <i class="fa-solid fa-bag-shopping text-2xl"></i>
+
+      <span
+        id="cart-count"
+        class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-black"
+      >
+        0
+      </span>
+    </a>
+  </div>
+</div>
+    </nav>
+
+    <main class="min-h-screen pb-12">
+      <div
+        class="relative w-full h-[400px] sm:h-[500px] bg-cover bg-center flex items-center justify-center"
+        style="
+          background-image:
+            linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+            url(&quot;https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&auto=format&fit=crop&q=80&quot;);
+        "
+      >
+        <div class="text-center text-white px-4 z-10 max-w-2xl">
+          <h3
+            class="text-3xl sm:text-5xl font-black tracking-widest mb-2 drop-shadow-md"
+          >
+            SMART TECHNOLOGY
+          </h3>
+          <hr class="w-32 border-2 border-white mx-auto my-4" />
+          <p class="text-base sm:text-lg italic font-light drop-shadow mb-6">
+            "Công nghệ không chỉ là công cụ — đó là phong cách sống và tương lai
+            trong tầm tay bạn."
+          </p>
+          <button
+            onclick="
+              document
+                .getElementById('products-section')
+                .scrollIntoView({ behavior: 'smooth' })
+            "
+            class="bg-white text-black font-bold text-sm px-8 py-3 rounded-none hover:bg-gray-200 transition-all shadow-lg tracking-widest uppercase"
+          >
+            Khám phá sản phẩm
+          </button>
+        </div>
+      </div>
+
+      <div class="w-full h-8 bg-black mb-8"></div>
+
+      <div id="products-section" class="max-w-7xl mx-auto px-4">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="section-title">SẢN PHẨM NỔI BẬT</div>
+          <hr class="border-black flex-1 mt-1" />
+        </div>
+
+        <div id="home-category-filter" class="mb-5 flex gap-2 overflow-x-auto pb-2 text-xs font-black uppercase tracking-wider">
+          <button onclick="setHomeCategory('all')" data-home-cat="all" class="home-cat-btn rounded-full bg-black px-4 py-2 text-white">Tất cả</button>
+          <button onclick="setHomeCategory('smartphone')" data-home-cat="smartphone" class="home-cat-btn rounded-full border border-gray-200 bg-white px-4 py-2 text-gray-700">Điện thoại</button>
+          <button onclick="setHomeCategory('notebook')" data-home-cat="notebook" class="home-cat-btn rounded-full border border-gray-200 bg-white px-4 py-2 text-gray-700">Laptop</button>
+          <button onclick="setHomeCategory('desktop')" data-home-cat="desktop" class="home-cat-btn rounded-full border border-gray-200 bg-white px-4 py-2 text-gray-700">PC</button>
+          <button onclick="setHomeCategory('monitor')" data-home-cat="monitor" class="home-cat-btn rounded-full border border-gray-200 bg-white px-4 py-2 text-gray-700">Màn hình</button>
+          <button onclick="setHomeCategory('mouse')" data-home-cat="mouse" class="home-cat-btn rounded-full border border-gray-200 bg-white px-4 py-2 text-gray-700">Chuột</button>
+          <button onclick="setHomeCategory('keyboard')" data-home-cat="keyboard" class="home-cat-btn rounded-full border border-gray-200 bg-white px-4 py-2 text-gray-700">Bàn phím</button>
+          <button onclick="setHomeCategory('headphone')" data-home-cat="headphone" class="home-cat-btn rounded-full border border-gray-200 bg-white px-4 py-2 text-gray-700">Tai nghe</button>
+          <button onclick="setHomeCategory('printer')" data-home-cat="printer" class="home-cat-btn rounded-full border border-gray-200 bg-white px-4 py-2 text-gray-700">Máy in</button>
+          <button onclick="setHomeCategory('tv')" data-home-cat="tv" class="home-cat-btn rounded-full border border-gray-200 bg-white px-4 py-2 text-gray-700">TV</button>
+        </div>
+
+        <div class="ui-panel p-6">
+          <div
+            id="products-grid"
+            class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6"
+          >
+            <div class="col-span-full text-center py-12 text-gray-500">
+              <i class="fa-solid fa-spinner animate-spin text-3xl mb-2"></i>
+              <p>Đang tải danh sách thiết bị từ kho CSDL SQLite...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer
+      class="bg-black text-white pt-12 pb-6 px-4 border-t-4 border-red-600"
+    >
+      <div
+        class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8 text-sm text-gray-300"
+      >
+        <div>
+          <h3
+            class="text-white font-bold text-base tracking-wider mb-4 pb-2 border-b border-gray-800"
+          >
+            LIÊN HỆ
+          </h3>
+          <p class="mb-2">
+            <b class="text-white">Địa chỉ:</b> 140 Lê Trọng Tấn, phường Sơn Kỳ,
+            quận Tân Phú, TP. HCM
+          </p>
+          <p class="mb-2"><b class="text-white">Hotline:</b> 0907 123 456</p>
+          <p class="mb-2">
+            <b class="text-white">Email:</b> support@techstore.vn
+          </p>
+          <p class="mt-4 leading-relaxed">
+            <b class="text-white">Hệ thống showroom:</b><br />- 45 Nguyễn Thị
+            Minh Khai, Q.1, TP.HCM<br />- 12 Đinh Tiên Hoàng, Q. Bình Thạnh,
+            TP.HCM
+          </p>
+        </div>
+        <div>
+          <h3
+            class="text-white font-bold text-base tracking-wider mb-4 pb-2 border-b border-gray-800"
+          >
+            HỖ TRỢ KHÁCH HÀNG
+          </h3>
+          <ul class="space-y-2">
+            <li>
+              <a href="#" class="hover:text-white transition-colors"
+                >Giới thiệu TechStore</a
+              >
+            </li>
+            <li>
+              <a href="#" class="hover:text-white transition-colors"
+                >Chính sách bảo hành</a
+              >
+            </li>
+            <li>
+              <a href="#" class="hover:text-white transition-colors"
+                >Hướng dẫn build PC</a
+              >
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h3
+            class="text-white font-bold text-base tracking-wider mb-4 pb-2 border-b border-gray-800"
+          >
+            ĐĂNG KÝ NHẬN DEAL HOT
+          </h3>
+          <form
+            onsubmit="
+              event.preventDefault();
+              alert('Đã đăng ký nhận mã giảm giá thành công!');
+            "
+            class="flex gap-2 mb-2"
+          >
+            <input
+              type="email"
+              placeholder="Nhập email..."
+              required
+              class="bg-gray-800 text-white text-xs px-3 py-2 border border-gray-700 w-full focus:outline-none"
+            />
+            <button
+              type="submit"
+              class="bg-red-600 hover:bg-red-700 text-white font-bold text-xs px-3 py-2"
+            >
+              Đăng ký
+            </button>
+          </form>
+          <p class="text-xs text-gray-500">
+            Nhận ngay thông tin linh kiện hot và mã ưu đãi mỗi tuần!
+          </p>
+        </div>
+        <div>
+          <h3
+            class="text-white font-bold text-base tracking-wider mb-4 pb-2 border-b border-gray-800"
+          >
+            VỀ CHÚNG TÔI
+          </h3>
+          <p class="mb-3 leading-relaxed text-xs sm:text-sm">
+            TechStore AI là chuỗi bán lẻ thiết bị công nghệ hàng đầu tích hợp
+            giải thuật phân tích AI FP-Growth tối ưu hóa trải nghiệm mua sắm.
+          </p>
+          <p class="italic text-gray-400 text-xs">
+            “TechStore AI - Định hình phong cách số”
+          </p>
+        </div>
+      </div>
+      <div
+        class="max-w-7xl mx-auto border-t border-gray-800 pt-6 text-center text-xs text-gray-500"
+      >
+        <p>© 2026 TechStore AI. Mọi quyền được bảo lưu.</p>
+      </div>
+    </footer>
+
+    <script>
+      const API_BASE_URL = "http://127.0.0.1:8000";
+      let homeProducts = [];
+      let homeCategory = "all";
+
+      function formatVND(amount) {
+        return new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        }).format(amount);
+      }
+
+      function updateCartBadge() {
+        const cart = JSON.parse(localStorage.getItem("techstore_cart") || "[]");
+        const badge = document.getElementById("cart-count");
+        if (badge)
+          badge.innerText = cart.reduce(
+            (sum, item) => sum + Number(item.quantity || 1),
+            0,
+          );
+      }
+
+      function renderMedia(iconUrl, productName, customClass = "") {
+        if (!iconUrl)
+          return `<i class="fa-solid fa-microchip text-gray-200 text-5xl"></i>`;
+        if (
+          iconUrl.includes(".") ||
+          iconUrl.includes("/") ||
+          iconUrl.startsWith("http")
+        ) {
+          return `<img src="${iconUrl}" alt="${productName}" class="w-full h-full object-contain ${customClass}">`;
+        }
+        return `<i class="fa-solid ${iconUrl} text-black text-5xl sm:text-6xl"></i>`;
+      }
+
+      async function initApp() {
+        updateCartBadge();
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/products`);
+          const productDB = await response.json();
+          homeProducts = productDB;
+          const grid = document.getElementById("products-grid");
+          grid.innerHTML = "";
+
+          const shuffled = [...productDB].sort(() => 0.5 - Math.random());
+          shuffled.forEach((product) => {
+            const category = product.category || product.cat || "Thiết bị";
+            // CHUYỂN HƯỚNG TỚI TRANG DETAIL KÈM THAM SỐ ID KHI CLICK
+            grid.innerHTML += `
+              <a href="detail.html?id=${encodeURIComponent(product.id)}" class="product-card cursor-pointer group block">
+                <div>
+                  <div class="h-40 sm:h-48 w-full flex items-center justify-center p-2 mb-4 overflow-hidden bg-gray-50/50 rounded-lg">
+                    ${renderMedia(product.icon, product.name, "group-hover:scale-105 transition-transform duration-300")}
+                  </div>
+                  <div class="mb-2 flex items-center justify-between gap-2">
+                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">${product.category_label || category}</span>
+                    <span class="text-[10px] font-black text-amber-500"><i class="fa-solid fa-star"></i> ${product.rating || 4.8}</span>
+                  </div>
+                  <h4 class="font-bold text-gray-900 text-xs sm:text-sm line-clamp-2 h-10 mb-2 group-hover:text-red-600 transition-colors">${product.name}</h4>
+                  <p class="text-left text-[11px] font-bold text-gray-400">Da ban ${product.sold || 0} · Con ${product.stock || "san"} sp</p>
+                </div>
+
+                <div class="mt-2 pt-3 border-t border-gray-100 flex items-center justify-between">
+                  <span class="text-red-600 font-black text-sm sm:text-base">${formatVND(product.price)}</span>
+                  <button onclick="event.preventDefault(); addToCartFast(${JSON.stringify(product).replace(/"/g, "&quot;")})" class="bg-black hover:bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-cart-plus text-xs"></i>
+                  </button>
+                </div>
+              </a>
+            `;
+          });
+        } catch (error) {
+          document.getElementById("products-grid").innerHTML = `
+            <div class="col-span-full text-center text-red-600 font-bold py-8">Không thể kết nối đến API. Bật uvicorn nhé!</div>
+          `;
+        }
+      }
+
+      function setHomeCategory(category) {
+        homeCategory = category;
+        document.querySelectorAll("[data-home-cat]").forEach((button) => {
+          const active = button.dataset.homeCat === category;
+          button.className = active
+            ? "home-cat-btn rounded-full bg-black px-4 py-2 text-white"
+            : "home-cat-btn rounded-full border border-gray-200 bg-white px-4 py-2 text-gray-700";
+        });
+        const list = homeProducts.filter(
+          (product) => category === "all" || (product.category || product.cat || "") === category,
+        );
+        renderHomeProductList(list);
+      }
+
+      function renderHomeProductList(products) {
+        const grid = document.getElementById("products-grid");
+        grid.innerHTML = "";
+        if (!products.length) {
+          grid.innerHTML = `<div class="col-span-full py-12 text-center text-sm font-bold text-gray-500">Không có sản phẩm trong danh mục này.</div>`;
+          return;
+        }
+        [...products].sort(() => 0.5 - Math.random()).forEach((product) => {
+          const category = product.category || product.cat || "Thiet bi";
+          grid.innerHTML += `
+            <a href="detail.html?id=${encodeURIComponent(product.id)}" class="product-card cursor-pointer group block">
+              <div>
+                <div class="h-40 sm:h-48 w-full flex items-center justify-center p-2 mb-4 overflow-hidden bg-gray-50/50 rounded-lg">
+                  ${renderMedia(product.icon, product.name, "group-hover:scale-105 transition-transform duration-300")}
+                </div>
+                <div class="mb-2 flex items-center justify-between gap-2">
+                  <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">${product.category_label || category}</span>
+                  <span class="text-[10px] font-black text-amber-500"><i class="fa-solid fa-star"></i> ${product.rating || 4.8}</span>
+                </div>
+                <h4 class="font-bold text-gray-900 text-xs sm:text-sm line-clamp-2 h-10 mb-2 group-hover:text-red-600 transition-colors">${product.name}</h4>
+                <p class="text-left text-[11px] font-bold text-gray-400">Da ban ${product.sold || 0} · Con ${product.stock || "san"} sp</p>
+              </div>
+              <div class="mt-2 pt-3 border-t border-gray-100 flex items-center justify-between">
+                <span class="text-red-600 font-black text-sm sm:text-base">${formatVND(product.price)}</span>
+                <button onclick="event.preventDefault(); addToCartFast(${JSON.stringify(product).replace(/"/g, "&quot;")})" class="bg-black hover:bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center transition-colors">
+                  <i class="fa-solid fa-cart-plus text-xs"></i>
+                </button>
+              </div>
+            </a>
+          `;
+        });
+      }
+
+      function addToCartFast(prod) {
+        const cart = JSON.parse(localStorage.getItem("techstore_cart") || "[]");
+        const existing = cart.find((item) => String(item.id) === String(prod.id));
+        if (existing) existing.quantity = Number(existing.quantity || 1) + 1;
+        else cart.push({ ...prod, quantity: 1 });
+        localStorage.setItem("techstore_cart", JSON.stringify(cart));
+        updateCartBadge();
+        alert(`Đã thêm vào giỏ hàng: ${prod.name}`);
+      }
+
+      window.onload = initApp;
+
+      // Xử lý thanh tìm kiếm trên cùng (Chuyển sang trang Product)
+      function executeGlobalSearch() {
+        const keyword = document
+          .getElementById("global-search-input")
+          .value.trim();
+        if (keyword) {
+          // Bắn từ khóa lên URL rồi nhảy sang trang sản phẩm
+          window.location.href = `product.html?search=${encodeURIComponent(keyword)}`;
+        } else {
+          window.location.href = `product.html`;
+        }
+      }
+    </script>
+  </body>
+</html>

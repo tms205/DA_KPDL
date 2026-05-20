@@ -1,0 +1,225 @@
+HUONG DAN CHAY DU AN VA GIAI THICH CODE
+mở terminal chạy theo lệnh này
+b1:
+cd D:\HK_6\KPDL\DA_CK_KPDL\DoAn
+b2:
+.venv\Scripts\python.exe -m uvicorn main:app --reload
+
+nếu nó hiện Aborted! thì chạy lại câu lệnh 
+sau đó nó sẽ hiện
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+mở theo link là được
+
+
+1. Muc tieu du an
+- Day la he thong goi y san pham mua kem cho cua hang cong nghe.
+- Frontend hien thi danh sach san pham va goi y AI.
+- Backend FastAPI tra du lieu san pham va goi y.
+- AI o day la tap luat mua kem duoc rut ra tu du lieu giao dich bang FP-Growth.
+- SQLite dong vai tro kho san pham thuc te de frontend hien thi.
+
+2. Luong chay tong the
+1. `tao_data.py` sinh du lieu giao dich mau va co chu dong chen loi du lieu.
+2. `train_model.py` lam sach du lieu, khai pha luat mua kem, xuat ra:
+   - `tap_luat_goi_y.csv`
+   - `top_products.csv`
+3. `setup_db.py` tao `database.db` va nap danh sach san pham demo.
+4. `main.py` nap cac file CSV va mo API.
+5. `index.html` goi API de hien thi san pham va nhan goi y mua kem.
+
+3. Cach chay
+- Tao moi truong ao:
+  `python -m venv .venv`
+- Kich hoat:
+  Windows: `.venv\Scripts\activate`
+- Cai thu vien:
+  `pip install fastapi uvicorn pandas numpy mlxtend fuzzywuzzy python-Levenshtein`
+- Sinh data:
+  `python tao_data.py`
+- Train luat:
+  `python train_model.py`
+- Tao database:
+  `python setup_db.py`
+- Chay backend:
+  `uvicorn main:app --reload`
+- Mo `index.html` bang Live Server hoac trinh duyet.
+
+4. Giai thich tung file
+
+4.1. `tao_data.py`
+- Nhiem vu: tao bo du lieu giao dich gia lap de mo phong lich su mua hang.
+- Danh sach `items` la cac nhom san pham chuan ma he thong quan tam.
+- Script tao `10000` hoa don voi 4 kich ban chinh:
+  - mua dien thoai thi hay mua kem tai nghe, dong ho
+  - mua laptop thi hay mua kem chuot, ban phim
+  - mua desktop thi hay mua kem man hinh, chuot, ban phim
+  - mua le te thi lay ngau nhien 1-2 mon
+- Muc dich cua cac kich ban nay la tao ra mau mua sam de FP-Growth co the hoc duoc quy luat.
+- Sau khi sinh du lieu sach, script co tinh “lam ban” du lieu:
+  - chen gia tri rong `NaN`
+  - viet sai chinh ta nhu `smatphone`, `mause`
+  - nhan ban ghi trung lap
+- Y nghia: chung minh buoc lam sach du lieu trong `train_model.py` la can thiet.
+- Ket qua xuat ra `data_goc.csv`.
+
+4.2. `train_model.py`
+- Nhiem vu: bien du lieu thô thanh tri thuc goi y.
+- Buoc 1: doc `data_goc.csv`.
+- Buoc 2: lam sach du lieu:
+  - xoa dong thieu ten san pham
+  - xoa dong trung lap
+  - sua loi chinh ta bang fuzzy matching
+- Ham `tu_dong_sua_ten()`:
+  - dua ten loi ve chu thuong
+  - so khop voi danh muc chuan
+  - neu diem tuong dong >= 80 thi doi thanh ten chuan
+- Buoc 3: tinh `top_products.csv`
+  - dem tan suat xuat hien cua moi san pham
+  - lay top 20 lam co che fallback
+- Ly do can fallback:
+  - neu san pham khong co luat goi y manh
+  - hoac san pham moi, it du lieu
+  - thi web van co goi y thay the, tranh man hinh trong
+- Buoc 4: tao “gio hang” theo ma hoa don
+  - gom cac san pham trong cung `Ma_Hoa_Don` thanh 1 list
+  - chi giu nhung gio hang co tu 2 mon tro len
+- Ly do bo gio hang 1 mon:
+  - khong the rut ra quy luat mua kem neu chi co 1 san pham
+- Buoc 5: ma hoa du lieu bang `TransactionEncoder`
+  - doi moi gio hang thanh vector True/False
+  - dinh dang nay phu hop de chay FP-Growth
+- Buoc 6: chay `fpgrowth()`
+  - `min_support = 10 / total_baskets` nghia la mot cap phai xuat hien it nhat 10 lan
+  - `max_len = 2` nghia la chi tim luat 1 -> 1 cho phu hop giao dien goi y
+- Buoc 7: tao association rules
+  - dung `confidence` de do do tin cay
+  - loc them `lift > 1.2` de giu lai cac luat co gia tri thuc su
+- Cuoi cung xuat:
+  - `tap_luat_goi_y.csv`: danh sach luat mua kem
+  - `top_products.csv`: danh sach san pham pho bien
+
+4.3. `setup_db.py`
+- Nhiem vu: tao kho san pham de frontend hien thi san pham thuc.
+- Script xoa bang `products` cu neu da ton tai.
+- Tao lai bang `products` gom:
+  - `id`
+  - `category`
+  - `name`
+  - `price`
+  - `icon`
+- Sau do nap 64 san pham demo vao SQLite.
+- Vai tro cua file nay:
+  - AI chi goi y theo category nhu `mouse`, `headphone`
+  - frontend can san pham cu the nhu “Tai nghe Sony...” hay “Chuot Logitech...”
+  - database giup anh xa tu category sang san pham thuc te
+
+4.4. `main.py`
+- Nhiem vu: cung cap API cho frontend.
+- `FastAPI()` tao ung dung backend.
+- `CORSMiddleware` cho phep frontend va backend khac cong van goi duoc nhau.
+- Khi app khoi dong:
+  - doc `tap_luat_goi_y.csv`
+  - doc `top_products.csv`
+  - neu chua co file thi tao DataFrame rong de tranh sap app
+
+- Ham `get_real_product_from_db(category_name)`:
+  - mo ket noi `database.db`
+  - tim ngau nhien 1 san pham thuoc category duoc goi y
+  - dong ket noi ngay sau khi doc
+  - neu khong tim thay thi tra ve 1 object placeholder
+- Y nghia:
+  - tap luat chi cho biet “nen goi y nhom nao”
+  - ham nay doi “nhom” thanh “san pham that” de dua len giao dien
+
+- API `/api/products`
+  - lay toan bo san pham tu bang `products`
+  - frontend dung endpoint nay de do san pham len trang chu
+
+- API `/api/recommend?item=...&limit=4`
+  - dau vao la category san pham dang xem
+  - xu ly theo 3 pha:
+1. Tim cac luat trong `rules_df` ma ve trai chua `item`
+2. Sap xep theo `confidence` giam dan
+3. Lay `consequents` lam danh sach category goi y
+4. Loai trung lap, bo chinh category dang xem, cat theo `limit`
+5. Neu khong co luat hop le thi lay `top_products.csv` lam fallback
+6. Goi `get_real_product_from_db()` de doi category sang san pham cu the
+7. Tra JSON cho frontend
+
+- Truong `source` trong response dung de frontend biet:
+  - `association_rules`: goi y den tu luat AI
+  - `popular_fallback`: goi y den tu top san pham pho bien
+
+4.5. `index.html`
+- Nhiem vu: giao dien nguoi dung.
+- Dung TailwindCSS de trang tri nhanh.
+- Dung Font Awesome de hien thi icon san pham.
+- Giao dien co 3 man:
+  - `view-home`: trang chu
+  - `view-detail`: chi tiet san pham + goi y AI
+  - `view-cart`: gio hang
+
+- Bien toan cuc:
+  - `productDB`: cache danh sach san pham lay tu backend
+  - `cart`: danh sach mon da them vao gio
+  - `currentItem`: san pham dang xem
+
+- Ham `initApp()`
+  - goi `http://127.0.0.1:8000/api/products`
+  - luu ket qua vao `productDB`
+  - sau do moi hien trang chu
+  - neu backend chua chay thi hien thong bao loi
+
+- Ham `navigateTo(viewName, productId)`
+  - an tat ca cac view
+  - hien view duoc chon
+  - neu vao chi tiet thi goi `renderDetail(productId)`
+  - neu vao gio hang thi goi `renderCart()`
+
+- Ham `renderHome()`
+  - lay ngau nhien 10 san pham tu `productDB`
+  - do len grid trang chu
+
+- Ham `renderDetail(productId)`
+  - tim san pham dang duoc chon
+  - do thong tin len giao dien
+  - goi API `/api/recommend`
+  - neu co goi y thi do ra cac the san pham mua kem
+  - dong thoi dua nhan de phan biet goi y AI hay top trending
+
+- Ham `addToCart(product)`
+  - them san pham vao mang `cart`
+  - cap nhat so luong tren icon gio hang
+  - doi mau nut tam thoi de bao them thanh cong
+
+- Ham `renderCart()`
+  - hien tung san pham trong gio
+  - tinh tong tien
+  - hien thong diep neu gio hang rong
+
+- Ham `removeFromCart(index)`
+  - xoa san pham khoi gio
+  - cap nhat lai tong so luong va tong tien
+
+5. Y nghia cac file du lieu
+- `data_goc.csv`: du lieu giao dich tho, chua loi va trung lap.
+- `tap_luat_goi_y.csv`: ket qua hoc luat mua kem.
+- `top_products.csv`: top san pham pho bien de fallback.
+- `database.db`: kho san pham de frontend hien thi.
+
+6. Diem can nho khi thuyet trinh
+- Day khong phai mo hinh deep learning, ma la he goi y dua tren Association Rules.
+- AI nam o buoc khai pha luat mua kem tu lich su giao dich.
+- Frontend khong tu tinh goi y, ma chi goi API backend.
+- Backend tach 2 vai tro:
+  - doc tap luat AI
+  - doc SQLite de tra san pham thuc te
+- Fallback la diem quan trong vi giai quyet truong hop khong co luat.
+- Buoc lam sach du lieu cung quan trong vi du lieu ban dau co chu dong gan loi.
+
+7. Tom tat ngan gon
+- `tao_data.py`: tao du lieu mau.
+- `train_model.py`: lam sach va hoc luat.
+- `setup_db.py`: tao kho san pham.
+- `main.py`: mo API.
+- `index.html`: hien thi va goi backend.
